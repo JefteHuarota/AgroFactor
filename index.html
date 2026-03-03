@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AgroFactor — App</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F2EE;
+    --surface: #FFFFFF;
+    --text: #1A1A1A;
+    --text-muted: #8A8A8A;
+    --border: #E8E4DE;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+  }
+  .fruit-avocado { --fruit-color: #2D6A4F; --fruit-light: #D8F3DC; --fruit-mid: #52B788; }
+  .fruit-strawberry { --fruit-color: #C1121F; --fruit-light: #FFE5E7; --fruit-mid: #E63946; }
+  .fruit-blueberry { --fruit-color: #3A0CA3; --fruit-light: #EDE7F6; --fruit-mid: #7B2FBE; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: #2A2A2A;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    padding: 20px;
+  }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,255,255,0.15);
+  }
+  .phone-notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 34px;
+    background: #111;
+    border-radius: 0 0 20px 20px;
+    z-index: 100;
+  }
+
+  /* SCREENS */
+  .screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    transform: translateX(30px);
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .screen.slide-back {
+    transform: translateX(-30px);
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+  }
+
+  /* HEADER */
+  .header {
+    padding: 8px 24px 16px;
+  }
+  .header-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .header-logo span { color: var(--accent); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* FRUIT TABS */
+  .fruit-tabs {
+    padding: 0 24px 16px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .fruit-tabs::-webkit-scrollbar { display: none; }
+  .fruit-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .fruit-tab.active {
+    background: var(--fruit-color, var(--accent));
+    border-color: var(--fruit-color, var(--accent));
+    color: white;
+    transform: scale(1.04);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  .fruit-tab .emoji { font-size: 18px; }
+
+  /* SECTION LABEL */
+  .section-label {
+    padding: 4px 24px 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* EMPAQUE CARDS */
+  .cards-row {
+    display: flex;
+    gap: 14px;
+    padding: 0 24px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .cards-row::-webkit-scrollbar { display: none; }
+
+  .empaque-card {
+    min-width: 170px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .empaque-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--fruit-color, var(--accent));
+    border-radius: 2px 2px 0 0;
+  }
+  .empaque-card:active {
+    transform: scale(0.97);
+    box-shadow: var(--shadow-lg);
+  }
+  .empaque-card .card-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .empaque-card .card-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .empaque-card .card-price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--fruit-color, var(--accent));
+    margin: 8px 0 4px;
+  }
+  .empaque-card .card-price-sub { font-size: 11px; color: var(--text-muted); }
+  .btn-vender {
+    margin-top: 14px;
+    width: 100%;
+    padding: 10px;
+    background: var(--fruit-color, var(--accent));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-vender:active { transform: scale(0.96); filter: brightness(0.9); }
+
+  /* FINANCIERA CARDS */
+  .financiera-cards {
+    padding: 0 24px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .financiera-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .financiera-card:active { transform: scale(0.98); }
+  .fin-logo {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .fin-info { flex: 1; }
+  .fin-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .fin-rate {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .fin-rate strong { color: var(--fruit-color, var(--accent)); font-size: 14px; }
+  .fin-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background: var(--fruit-light, var(--accent-light));
+    color: var(--fruit-color, var(--accent));
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: center;
+    max-width: 72px;
+  }
+
+  /* BACK BUTTON */
+  .back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+    padding: 8px 0;
+  }
+  .back-btn svg { transition: transform 0.2s; }
+  .back-btn:active svg { transform: translateX(-4px); }
+
+  /* SCREEN 2 — VENTA FORM */
+  .screen2-header {
+    padding: 8px 24px 20px;
+  }
+  .screen2-empaque-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--fruit-light, var(--accent-light));
+    border-radius: 50px;
+    margin-bottom: 12px;
+  }
+  .screen2-empaque-badge span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fruit-color, var(--accent));
+  }
+  .screen2-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .screen2-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .form-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 0 24px 14px;
+    box-shadow: var(--shadow);
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--fruit-color, var(--accent)); }
+  .form-row { display: flex; gap: 10px; }
+  .form-row .form-group { flex: 1; }
+
+  .info-box {
+    background: var(--fruit-light, var(--accent-light));
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin: 0 24px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .info-box p { font-size: 13px; color: var(--fruit-color, var(--accent)); font-weight: 500; line-height: 1.4; }
+
+  .btn-primary {
+    margin: 0 24px 80px;
+    width: calc(100% - 48px);
+    padding: 18px;
+    background: var(--fruit-color, var(--accent));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  }
+  .btn-primary:active { transform: scale(0.97); filter: brightness(0.9); }
+
+  /* SCREEN 3 — RESUMEN */
+  .summary-hero {
+    background: var(--fruit-color, var(--accent));
+    margin: 0 24px 20px;
+    border-radius: var(--radius);
+    padding: 24px;
+    color: white;
+  }
+  .summary-hero-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 6px; }
+  .summary-hero-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 40px;
+    letter-spacing: -1px;
+  }
+  .summary-hero-sub { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  .summary-rows {
+    background: var(--surface);
+    border-radius: var(--radius);
+    margin: 0 24px 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row-label { font-size: 14px; color: var(--text-muted); }
+  .summary-row-value { font-size: 14px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
+  .summary-row-value.highlight { color: var(--fruit-color, var(--accent)); font-size: 16px; }
+
+  /* SCREEN 4 — FACTURA / FINANCIERA */
+  .upload-zone {
+    margin: 0 24px 16px;
+    border: 2.5px dashed var(--fruit-mid, var(--accent));
+    border-radius: var(--radius);
+    padding: 32px 20px;
+    text-align: center;
+    background: var(--fruit-light, var(--accent-light));
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upload-zone:active { transform: scale(0.98); }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--fruit-color, var(--accent)); }
+  .upload-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  .fin-select-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin: 0 24px 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .fin-select-card.selected {
+    border-color: var(--fruit-color, var(--accent));
+    background: var(--fruit-light, var(--accent-light));
+  }
+  .radio-circle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2.5px solid var(--border);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .fin-select-card.selected .radio-circle {
+    border-color: var(--fruit-color, var(--accent));
+    background: var(--fruit-color, var(--accent));
+  }
+  .radio-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .fin-select-card.selected .radio-dot { opacity: 1; }
+
+  /* SUCCESS SCREEN */
+  .success-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 32px 40px;
+    min-height: 100%;
+  }
+  .success-icon {
+    width: 100px; height: 100px;
+    background: var(--fruit-light, var(--accent-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    margin-bottom: 28px;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .success-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .success-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .success-detail {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    width: 100%;
+    margin: 28px 0;
+    text-align: left;
+    box-shadow: var(--shadow);
+  }
+  .success-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .success-detail-row:last-child { border-bottom: none; }
+  .success-detail-row span:first-child { color: var(--text-muted); }
+  .success-detail-row span:last-child { font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
+
+  /* NAV BAR */
+  .nav-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 82px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 16px;
+    z-index: 20;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+  .nav-item:active { background: var(--bg); }
+  .nav-item .nav-icon { font-size: 22px; }
+  .nav-item .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
+  .nav-item.active .nav-label { color: var(--accent); }
+
+  /* LOADING OVERLAY */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    border-radius: 50px;
+  }
+  .loading-overlay.show { opacity: 1; pointer-events: all; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+
+  /* ANIMATE IN */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim-item { opacity: 0; animation: slideUp 0.4s ease forwards; }
+  .anim-item:nth-child(1) { animation-delay: 0.05s; }
+  .anim-item:nth-child(2) { animation-delay: 0.1s; }
+  .anim-item:nth-child(3) { animation-delay: 0.15s; }
+  .anim-item:nth-child(4) { animation-delay: 0.2s; }
+  .anim-item:nth-child(5) { animation-delay: 0.25s; }
+  .anim-item:nth-child(6) { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+<div class="phone fruit-avocado" id="phone">
+  <div class="phone-notch"></div>
+  <div class="loading-overlay" id="loading">
+    <div class="spinner" id="spinnerEl"></div>
+    <p class="loading-text" id="loadingText">Procesando...</p>
+  </div>
+
+  <!-- ==================== SCREEN 1: HOME ==================== -->
+  <div class="screen active" id="screen1">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header anim-item">
+      <div class="header-logo">Agro<span>Factor</span></div>
+      <div class="header-sub">Elige tu fruta y selecciona un empaque</div>
+    </div>
+
+    <div class="fruit-tabs anim-item" id="fruitTabs">
+      <button class="fruit-tab active" onclick="selectFruit('avocado',this)"><span class="emoji">🥑</span> Aguacate</button>
+      <button class="fruit-tab" onclick="selectFruit('strawberry',this)"><span class="emoji">🍓</span> Fresa</button>
+      <button class="fruit-tab" onclick="selectFruit('blueberry',this)"><span class="emoji">🫐</span> Arándano</button>
+    </div>
+
+    <div class="section-label anim-item">Empaques disponibles</div>
+    <div class="cards-row anim-item" id="empaqueCards">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="section-label anim-item" style="margin-top:8px">Financieras asociadas</div>
+    <div class="financiera-cards anim-item" id="financieraCards">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-label">Inicio</div></div>
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Mis ventas</div></div>
+      <div class="nav-item"><div class="nav-icon">📄</div><div class="nav-label">Facturas</div></div>
+      <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 2: VENTA FORM ==================== -->
+  <div class="screen" id="screen2">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="screen2-header">
+      <button class="back-btn" onclick="goBack(2)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Regresar
+      </button>
+      <div class="screen2-empaque-badge">
+        <span id="s2EmpaqueLabel">SV Fresh · Aguacate</span>
+      </div>
+      <div class="screen2-title">Detalle de<br>tu venta</div>
+      <div class="screen2-sub">Llena los campos para generar tu factura</div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">Variedad de fruta</label>
+        <select class="form-input" id="variedadInput">
+          <option>Hass</option><option>Fuerte</option><option>Criollo</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Cantidad (kg)</label>
+          <input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Precio/kg</label>
+          <input class="form-input" type="text" id="precioKgInput" readonly>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha de entrega</label>
+        <input class="form-input" type="date" id="fechaEntregaInput">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Calidad / Calibre</label>
+        <select class="form-input">
+          <option>Premium A</option><option>Estándar B</option><option>Industrial C</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Municipio de origen</label>
+        <input class="form-input" type="text" placeholder="Ej. Tancítaro, Michoacán">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notas adicionales</label>
+        <input class="form-input" type="text" placeholder="Certificaciones, observaciones...">
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span style="font-size:20px">💡</span>
+      <p>El empaque liquidará el pago en <strong id="diasPago">15</strong> días hábiles tras la entrega.</p>
+    </div>
+
+    <div class="form-card" id="previewCard" style="border:2px solid var(--fruit-color, var(--accent))">
+      <div style="font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">Estimado de pago</div>
+      <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--fruit-color,var(--accent))" id="totalEstimado">$0.00</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Precio empaque × cantidad ingresada</div>
+    </div>
+
+    <button class="btn-primary anim-item" onclick="goToResumen()">
+      Ver resumen completo
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- ==================== SCREEN 3: RESUMEN ==================== -->
+  <div class="screen" id="screen3">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="screen2-header">
+      <button class="back-btn" onclick="goBack(3)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Editar datos
+      </button>
+      <div class="screen2-title">Confirma tu<br>operación</div>
+      <div class="screen2-sub">Revisa los totales antes de continuar</div>
+    </div>
+
+    <div class="summary-hero">
+      <div class="summary-hero-label">Total a recibir del empaque</div>
+      <div class="summary-hero-amount" id="s3Total">$0.00</div>
+      <div class="summary-hero-sub" id="s3Empaque">SV Fresh · Aguacate</div>
+    </div>
+
+    <div class="summary-rows">
+      <div class="summary-row"><span class="summary-row-label">Empaque</span><span class="summary-row-value" id="s3EmpaqueNombre">SV Fresh</span></div>
+      <div class="summary-row"><span class="summary-row-label">Fruta</span><span class="summary-row-value" id="s3Fruta">Aguacate Hass</span></div>
+      <div class="summary-row"><span class="summary-row-label">Cantidad</span><span class="summary-row-value" id="s3Cantidad">— kg</span></div>
+      <div class="summary-row"><span class="summary-row-label">Precio / kg</span><span class="summary-row-value" id="s3Precio">$0.00</span></div>
+      <div class="summary-row"><span class="summary-row-label">Fecha de entrega</span><span class="summary-row-value" id="s3Fecha">—</span></div>
+      <div class="summary-row"><span class="summary-row-label">Pago en</span><span class="summary-row-value" id="s3Dias">15 días hábiles</span></div>
+      <div class="summary-row"><span class="summary-row-label"><strong>TOTAL</strong></span><span class="summary-row-value highlight" id="s3TotalRow">$0.00</span></div>
+    </div>
+
+    <div class="info-box">
+      <span style="font-size:20px">📅</span>
+      <p>Fecha estimada de liquidación: <strong id="s3FechaLiquidacion">—</strong></p>
+    </div>
+
+    <button class="btn-primary" onclick="goToFactura()">
+      Cargar factura y solicitar anticipo
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- ==================== SCREEN 4: FACTURA / FINANCIERA ==================== -->
+  <div class="screen" id="screen4">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="screen2-header">
+      <button class="back-btn" onclick="goBack(4)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Regresar
+      </button>
+      <div class="screen2-title">Factoraje<br>financiero</div>
+      <div class="screen2-sub">Sube tu factura y selecciona tu financiera</div>
+    </div>
+
+    <div class="upload-zone" id="uploadZone" onclick="simulateUpload()">
+      <div class="upload-icon" id="uploadIcon">📂</div>
+      <div class="upload-title" id="uploadTitle">Cargar factura XML / PDF</div>
+      <div class="upload-sub" id="uploadSub">Toca para seleccionar desde tu dispositivo</div>
+    </div>
+
+    <div class="section-label" style="padding:4px 24px 10px">Selecciona tu financiera</div>
+
+    <div class="fin-select-card" id="finCard0" onclick="selectFinanciera(0)">
+      <div class="radio-circle"><div class="radio-dot"></div></div>
+      <div class="fin-logo" style="background:#1565C0">BF</div>
+      <div class="fin-info">
+        <div class="fin-name">BancaFresh</div>
+        <div class="fin-rate">Anticipo: <strong>90%</strong> inmediato</div>
+      </div>
+      <div class="fin-badge">Promo 🔥</div>
+    </div>
+    <div class="fin-select-card" id="finCard1" onclick="selectFinanciera(1)">
+      <div class="radio-circle"><div class="radio-dot"></div></div>
+      <div class="fin-logo" style="background:#6A1B9A">AgroFin</div>
+      <div class="fin-info">
+        <div class="fin-name">AgroFin</div>
+        <div class="fin-rate">Anticipo: <strong>88%</strong> inmediato</div>
+      </div>
+      <div class="fin-badge">Popular</div>
+    </div>
+    <div class="fin-select-card" id="finCard2" onclick="selectFinanciera(2)">
+      <div class="radio-circle"><div class="radio-dot"></div></div>
+      <div class="fin-logo" style="background:#2E7D32">FinVerde</div>
+      <div class="fin-info">
+        <div class="fin-name">FinVerde</div>
+        <div class="fin-rate">Anticipo: <strong>84%</strong> inmediato</div>
+      </div>
+      <div class="fin-badge">Estable</div>
+    </div>
+    <div class="fin-select-card" id="finCard3" onclick="selectFinanciera(3)">
+      <div class="radio-circle"><div class="radio-dot"></div></div>
+      <div class="fin-logo" style="background:#E65100">CampoCredi</div>
+      <div class="fin-info">
+        <div class="fin-name">CampoCredi</div>
+        <div class="fin-rate">Anticipo: <strong>80%</strong> inmediato</div>
+      </div>
+      <div class="fin-badge">Básico</div>
+    </div>
+
+    <div class="form-card" id="anticipoCard" style="margin-bottom:0">
+      <div style="font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Recibirás de inmediato</div>
+      <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--fruit-color,var(--accent))" id="anticipoMonto">$0.00</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="anticipoDesc">Selecciona una financiera</div>
+    </div>
+
+    <button class="btn-primary" style="margin-top:14px" onclick="confirmar()">
+      Confirmar y ceder factura
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- ==================== SCREEN 5: SUCCESS ==================== -->
+  <div class="screen" id="screen5">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="success-screen">
+      <div class="success-icon">✅</div>
+      <div class="success-title">¡Operación<br>completada!</div>
+      <div class="success-sub">Tu factura fue cedida exitosamente. El anticipo estará en tu cuenta en minutos.</div>
+      <div class="success-detail" id="successDetail">
+        <div class="success-detail-row"><span>Empaque</span><span id="sd-empaque">SV Fresh</span></div>
+        <div class="success-detail-row"><span>Financiera</span><span id="sd-fin">BancaFresh</span></div>
+        <div class="success-detail-row"><span>Anticipo recibido</span><span id="sd-anticipo">$0.00</span></div>
+        <div class="success-detail-row"><span>Saldo restante</span><span id="sd-restante">$0.00</span></div>
+        <div class="success-detail-row"><span>Fecha liquidación</span><span id="sd-fecha">—</span></div>
+      </div>
+      <button class="btn-primary" style="margin:0;width:100%" onclick="goHome()">
+        Volver al inicio
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FRUITS = {
+  avocado: {
+    class: 'fruit-avocado',
+    empaques: [
+      { name: 'SV Fresh', price: 10, dias: 15 },
+      { name: 'Calavo', price: 12, dias: 20 },
+      { name: 'JR Produce', price: 9.5, dias: 12 },
+      { name: 'MX Export', price: 11, dias: 18 },
+    ]
+  },
+  strawberry: {
+    class: 'fruit-strawberry',
+    empaques: [
+      { name: 'BerryPack', price: 22, dias: 10 },
+      { name: 'FreshRed', price: 18, dias: 14 },
+      { name: 'SunBerry', price: 25, dias: 8 },
+    ]
+  },
+  blueberry: {
+    class: 'fruit-blueberry',
+    empaques: [
+      { name: 'BlueFarm', price: 35, dias: 14 },
+      { name: 'Wild Blue', price: 40, dias: 21 },
+      { name: 'Pacific Blue', price: 38, dias: 17 },
+    ]
+  }
+};
+
+const FIN_RATES = [0.90, 0.88, 0.84, 0.80];
+const FIN_NAMES = ['BancaFresh','AgroFin','FinVerde','CampoCredi'];
+
+let state = {
+  fruit: 'avocado',
+  empaque: null,
+  cantidad: 0,
+  finSelected: -1,
+  uploaded: false,
+};
+
+function selectFruit(fruit, el) {
+  state.fruit = fruit;
+  document.getElementById('phone').className = 'phone ' + FRUITS[fruit].class;
+  document.querySelectorAll('.fruit-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderEmpaques();
+}
+
+function renderEmpaques() {
+  const data = FRUITS[state.fruit].empaques;
+  const container = document.getElementById('empaqueCards');
+  container.innerHTML = data.map((e,i) => `
+    <div class="empaque-card anim-item" onclick="selectEmpaque(${i})">
+      <div class="card-label">Empaque</div>
+      <div class="card-name">${e.name}</div>
+      <div class="card-label" style="margin-top:8px">Precio compra</div>
+      <div class="card-price">$${e.price}<span class="card-price-sub"> /kg</span></div>
+      <button class="btn-vender">Vender aquí</button>
+    </div>
+  `).join('');
+}
+
+function selectEmpaque(idx) {
+  state.empaque = idx;
+  const e = FRUITS[state.fruit].empaques[idx];
+  const fruitEmoji = { avocado:'🥑', strawberry:'🍓', blueberry:'🫐' }[state.fruit];
+  const fruitName = { avocado:'Aguacate', strawberry:'Fresa', blueberry:'Arándano' }[state.fruit];
+
+  document.getElementById('s2EmpaqueLabel').textContent = `${e.name} · ${fruitName}`;
+  document.getElementById('precioKgInput').value = `$${e.price}`;
+  document.getElementById('diasPago').textContent = e.dias;
+  document.getElementById('cantidadInput').value = '';
+  document.getElementById('totalEstimado').textContent = '$0.00';
+
+  const today = new Date();
+  today.setDate(today.getDate() + 1);
+  document.getElementById('fechaEntregaInput').value = today.toISOString().split('T')[0];
+
+  navigateTo(2);
+}
+
+function updatePreview() {
+  const e = FRUITS[state.fruit].empaques[state.empaque];
+  const kg = parseFloat(document.getElementById('cantidadInput').value) || 0;
+  const total = kg * e.price;
+  state.cantidad = kg;
+  document.getElementById('totalEstimado').textContent = formatMXN(total);
+}
+
+function goToResumen() {
+  if (!state.cantidad || state.cantidad <= 0) {
+    document.getElementById('cantidadInput').focus();
+    document.getElementById('cantidadInput').style.borderColor = 'red';
+    setTimeout(() => document.getElementById('cantidadInput').style.borderColor = '', 1500);
+    return;
+  }
+  const e = FRUITS[state.fruit].empaques[state.empaque];
+  const total = state.cantidad * e.price;
+  const fruitName = { avocado:'Aguacate Hass', strawberry:'Fresa', blueberry:'Arándano' }[state.fruit];
+
+  document.getElementById('s3Total').textContent = formatMXN(total);
+  document.getElementById('s3Empaque').textContent = `${e.name}`;
+  document.getElementById('s3EmpaqueNombre').textContent = e.name;
+  document.getElementById('s3Fruta').textContent = fruitName;
+  document.getElementById('s3Cantidad').textContent = `${state.cantidad} kg`;
+  document.getElementById('s3Precio').textContent = `$${e.price}/kg`;
+  document.getElementById('s3Dias').textContent = `${e.dias} días hábiles`;
+  document.getElementById('s3TotalRow').textContent = formatMXN(total);
+
+  const fecha = document.getElementById('fechaEntregaInput').value;
+  if (fecha) {
+    document.getElementById('s3Fecha').textContent = formatDate(fecha);
+    const liq = new Date(fecha);
+    liq.setDate(liq.getDate() + e.dias);
+    document.getElementById('s3FechaLiquidacion').textContent = formatDate(liq.toISOString().split('T')[0]);
+    document.getElementById('sd-fecha').textContent = formatDate(liq.toISOString().split('T')[0]);
+  }
+
+  showLoading('Calculando totales...', 800, () => navigateTo(3));
+}
+
+function goToFactura() {
+  navigateTo(4);
+  updateAnticipoCard();
+}
+
+function simulateUpload() {
+  if (state.uploaded) return;
+  showLoading('Cargando factura...', 1200, () => {
+    state.uploaded = true;
+    document.getElementById('uploadZone').style.borderStyle = 'solid';
+    document.getElementById('uploadIcon').textContent = '✅';
+    document.getElementById('uploadTitle').textContent = 'factura_2024_001.xml';
+    document.getElementById('uploadSub').textContent = 'Factura cargada correctamente';
+  });
+}
+
+function selectFinanciera(idx) {
+  state.finSelected = idx;
+  for (let i = 0; i < 4; i++) {
+    document.getElementById(`finCard${i}`).classList.toggle('selected', i === idx);
+  }
+  updateAnticipoCard();
+}
+
+function updateAnticipoCard() {
+  if (state.finSelected < 0 || state.empaque === null) return;
+  const e = FRUITS[state.fruit].empaques[state.empaque];
+  const total = state.cantidad * e.price;
+  const rate = FIN_RATES[state.finSelected];
+  const anticipo = total * rate;
+  document.getElementById('anticipoMonto').textContent = formatMXN(anticipo);
+  document.getElementById('anticipoDesc').textContent = `${(rate*100).toFixed(0)}% del total · ${FIN_NAMES[state.finSelected]}`;
+}
+
+function confirmar() {
+  if (!state.uploaded) { simulateUpload(); return; }
+  if (state.finSelected < 0) {
+    document.querySelector('.fin-select-card').style.outline = '2px solid red';
+    setTimeout(() => document.querySelector('.fin-select-card').style.outline = '', 1500);
+    return;
+  }
+  const e = FRUITS[state.fruit].empaques[state.empaque];
+  const total = state.cantidad * e.price;
+  const rate = FIN_RATES[state.finSelected];
+  const anticipo = total * rate;
+
+  document.getElementById('sd-empaque').textContent = e.name;
+  document.getElementById('sd-fin').textContent = FIN_NAMES[state.finSelected];
+  document.getElementById('sd-anticipo').textContent = formatMXN(anticipo);
+  document.getElementById('sd-restante').textContent = formatMXN(total - anticipo);
+
+  showLoading('Cediendo factura...', 1800, () => navigateTo(5));
+}
+
+function goHome() {
+  state.finSelected = -1;
+  state.uploaded = false;
+  document.getElementById('uploadIcon').textContent = '📂';
+  document.getElementById('uploadTitle').textContent = 'Cargar factura XML / PDF';
+  document.getElementById('uploadSub').textContent = 'Toca para seleccionar desde tu dispositivo';
+  document.getElementById('uploadZone').style.borderStyle = 'dashed';
+  for (let i = 0; i < 4; i++) document.getElementById(`finCard${i}`).classList.remove('selected');
+  navigateTo(1);
+}
+
+function goBack(from) {
+  const prev = from - 1;
+  navigateTo(prev, true);
+}
+
+function navigateTo(n, back = false) {
+  document.querySelectorAll('.screen').forEach((s, i) => {
+    s.classList.remove('active');
+    if (!back) s.classList.toggle('slide-back', i < n - 1);
+  });
+  const target = document.getElementById(`screen${n}`);
+  target.classList.add('active');
+  target.classList.remove('slide-back');
+  target.scrollTop = 0;
+}
+
+function showLoading(text, duration, cb) {
+  const ov = document.getElementById('loading');
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('spinnerEl').style.borderTopColor = getComputedStyle(document.getElementById('phone')).getPropertyValue('--fruit-color') || '#2D6A4F';
+  ov.classList.add('show');
+  setTimeout(() => { ov.classList.remove('show'); if (cb) cb(); }, duration);
+}
+
+function formatMXN(n) {
+  return new Intl.NumberFormat('es-MX', { style:'currency', currency:'MXN' }).format(n);
+}
+function formatDate(str) {
+  const d = new Date(str + 'T12:00:00');
+  return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+// Init
+renderEmpaques();
+document.getElementById('financieraCards').innerHTML = `
+  <div class="financiera-card anim-item">
+    <div class="fin-logo" style="background:#1565C0">BF</div>
+    <div class="fin-info"><div class="fin-name">BancaFresh</div><div class="fin-rate">Anticipo: <strong>90%</strong> inmediato</div></div>
+    <div class="fin-badge">Promo 🔥</div>
+  </div>
+  <div class="financiera-card anim-item">
+    <div class="fin-logo" style="background:#6A1B9A">AF</div>
+    <div class="fin-info"><div class="fin-name">AgroFin</div><div class="fin-rate">Anticipo: <strong>88%</strong> inmediato</div></div>
+    <div class="fin-badge">Popular</div>
+  </div>
+  <div class="financiera-card anim-item">
+    <div class="fin-logo" style="background:#2E7D32">FV</div>
+    <div class="fin-info"><div class="fin-name">FinVerde</div><div class="fin-rate">Anticipo: <strong>84%</strong> inmediato</div></div>
+    <div class="fin-badge">Estable</div>
+  </div>
+  <div class="financiera-card anim-item">
+    <div class="fin-logo" style="background:#E65100">CC</div>
+    <div class="fin-info"><div class="fin-name">CampoCredi</div><div class="fin-rate">Anticipo: <strong>80%</strong> inmediato</div></div>
+    <div class="fin-badge">Básico</div>
+  </div>
+`;
+</script>
+</body>
+</html>
