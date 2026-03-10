@@ -6,1195 +6,509 @@
 <title>AgroFactor — App</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F5F2EE;
-    --surface: #FFFFFF;
-    --text: #1A1A1A;
-    --text-muted: #8A8A8A;
-    --border: #E8E4DE;
-    --accent: #2D6A4F;
-    --accent-light: #D8F3DC;
-    --radius: 20px;
-    --radius-sm: 12px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
-  }
-  .fruit-avocado { --fruit-color: #2D6A4F; --fruit-light: #D8F3DC; --fruit-mid: #52B788; }
-  .fruit-strawberry { --fruit-color: #C1121F; --fruit-light: #FFE5E7; --fruit-mid: #E63946; }
-  .fruit-blueberry { --fruit-color: #3A0CA3; --fruit-light: #EDE7F6; --fruit-mid: #7B2FBE; }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    background: var(--bg);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-  }
-
-  .phone {
-    width: 100%;
-    min-height: 100vh;
-    background: var(--bg);
-    position: relative;
-    overflow-x: hidden;
-  }
-  .phone-notch { display: none; }
-
-  /* SCREENS */
-  .screen {
-    position: fixed;
-    inset: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    padding-bottom: 90px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s ease, transform 0.35s ease;
-    transform: translateX(30px);
-  }
-  .screen::-webkit-scrollbar { display: none; }
-  .screen.active {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(0);
-  }
-  .screen.slide-back {
-    transform: translateX(-30px);
-  }
-
-  /* STATUS BAR */
-  .status-bar {
-    height: 44px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 0 28px 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--bg);
-  }
-
-  /* HEADER */
-  .header {
-    padding: 8px 24px 16px;
-  }
-  .header-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    color: var(--text);
-    letter-spacing: -0.5px;
-  }
-  .header-logo span { color: var(--accent); }
-  .header-sub {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  /* FRUIT TABS */
-  .fruit-tabs {
-    padding: 0 24px 16px;
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .fruit-tabs::-webkit-scrollbar { display: none; }
-  .fruit-tab {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border-radius: 50px;
-    border: 2px solid var(--border);
-    background: var(--surface);
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-muted);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.25s ease;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .fruit-tab.active {
-    background: var(--fruit-color, var(--accent));
-    border-color: var(--fruit-color, var(--accent));
-    color: white;
-    transform: scale(1.04);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-  }
-  .fruit-tab .emoji { font-size: 18px; }
-
-  /* SECTION LABEL */
-  .section-label {
-    padding: 4px 24px 12px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  /* EMPAQUE CARDS */
-  .cards-row {
-    display: flex;
-    gap: 14px;
-    padding: 0 24px 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .cards-row::-webkit-scrollbar { display: none; }
-
-  .empaque-card {
-    min-width: 170px;
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 18px;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    transition: all 0.25s ease;
-    border: 2px solid transparent;
-    position: relative;
-    overflow: hidden;
-  }
-  .empaque-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--fruit-color, var(--accent));
-    border-radius: 2px 2px 0 0;
-  }
-  .empaque-card:active {
-    transform: scale(0.97);
-    box-shadow: var(--shadow-lg);
-  }
-  .empaque-card .card-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .empaque-card .card-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 500;
-    margin-bottom: 2px;
-  }
-  .empaque-card .card-price {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    color: var(--fruit-color, var(--accent));
-    margin: 8px 0 4px;
-  }
-  .empaque-card .card-price-sub { font-size: 11px; color: var(--text-muted); }
-  .btn-vender {
-    margin-top: 14px;
-    width: 100%;
-    padding: 10px;
-    background: var(--fruit-color, var(--accent));
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
-  }
-  .btn-vender:active { transform: scale(0.96); filter: brightness(0.9); }
-
-  /* FINANCIERA CARDS */
-  .financiera-cards {
-    padding: 0 24px 100px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .financiera-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-  }
-  .financiera-card:active { transform: scale(0.98); }
-  .fin-logo {
-    width: 52px; height: 52px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 16px;
-    color: white;
-    flex-shrink: 0;
-  }
-  .fin-info { flex: 1; }
-  .fin-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text);
-  }
-  .fin-rate {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-  .fin-rate strong { color: var(--fruit-color, var(--accent)); font-size: 14px; }
-  .fin-badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 50px;
-    background: var(--fruit-light, var(--accent-light));
-    color: var(--fruit-color, var(--accent));
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    text-align: center;
-    max-width: 72px;
-  }
-
-  /* BACK BUTTON */
-  .back-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--accent);
-    padding: 8px 0;
-  }
-  .back-btn svg { transition: transform 0.2s; }
-  .back-btn:active svg { transform: translateX(-4px); }
-
-  /* SCREEN 2 — VENTA FORM */
-  .screen2-header {
-    padding: 8px 24px 20px;
-  }
-  .screen2-empaque-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--fruit-light, var(--accent-light));
-    border-radius: 50px;
-    margin-bottom: 12px;
-  }
-  .screen2-empaque-badge span {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--fruit-color, var(--accent));
-  }
-  .screen2-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 24px;
-    color: var(--text);
-    line-height: 1.2;
-    margin-bottom: 4px;
-  }
-  .screen2-sub {
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-
-  .form-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin: 0 24px 14px;
-    box-shadow: var(--shadow);
-  }
-  .form-group { margin-bottom: 16px; }
-  .form-group:last-child { margin-bottom: 0; }
-  .form-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    display: block;
-  }
-  .form-input {
-    width: 100%;
-    padding: 14px 16px;
-    background: var(--bg);
-    border: 2px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--text);
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .form-input:focus { border-color: var(--fruit-color, var(--accent)); }
-  .form-row { display: flex; gap: 10px; }
-  .form-row .form-group { flex: 1; }
-
-  .info-box {
-    background: var(--fruit-light, var(--accent-light));
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    margin: 0 24px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .info-box p { font-size: 13px; color: var(--fruit-color, var(--accent)); font-weight: 500; line-height: 1.4; }
-
-  .btn-primary {
-    margin: 0 24px 80px;
-    width: calc(100% - 48px);
-    padding: 18px;
-    background: var(--fruit-color, var(--accent));
-    color: white;
-    border: none;
-    border-radius: var(--radius);
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.2s;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  }
-  .btn-primary:active { transform: scale(0.97); filter: brightness(0.9); }
-
-  /* SCREEN 3 — RESUMEN */
-  .summary-hero {
-    background: var(--fruit-color, var(--accent));
-    margin: 0 24px 20px;
-    border-radius: var(--radius);
-    padding: 24px;
-    color: white;
-  }
-  .summary-hero-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 6px; }
-  .summary-hero-amount {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 40px;
-    letter-spacing: -1px;
-  }
-  .summary-hero-sub { font-size: 13px; opacity: 0.8; margin-top: 4px; }
-
-  .summary-rows {
-    background: var(--surface);
-    border-radius: var(--radius);
-    margin: 0 24px 14px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-  }
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-row-label { font-size: 14px; color: var(--text-muted); }
-  .summary-row-value { font-size: 14px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
-  .summary-row-value.highlight { color: var(--fruit-color, var(--accent)); font-size: 16px; }
-
-  /* SCREEN 4 — FACTURA / FINANCIERA */
-  .upload-zone {
-    margin: 0 24px 16px;
-    border: 2.5px dashed var(--fruit-mid, var(--accent));
-    border-radius: var(--radius);
-    padding: 32px 20px;
-    text-align: center;
-    background: var(--fruit-light, var(--accent-light));
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .upload-zone:active { transform: scale(0.98); }
-  .upload-icon { font-size: 36px; margin-bottom: 10px; }
-  .upload-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--fruit-color, var(--accent)); }
-  .upload-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-
-  .fin-select-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    margin: 0 24px 12px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-  }
-  .fin-select-card.selected {
-    border-color: var(--fruit-color, var(--accent));
-    background: var(--fruit-light, var(--accent-light));
-  }
-  .radio-circle {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 2.5px solid var(--border);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  .fin-select-card.selected .radio-circle {
-    border-color: var(--fruit-color, var(--accent));
-    background: var(--fruit-color, var(--accent));
-  }
-  .radio-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: white;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .fin-select-card.selected .radio-dot { opacity: 1; }
-
-  /* SUCCESS SCREEN */
-  .success-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 60px 32px 40px;
-    min-height: 100%;
-  }
-  .success-icon {
-    width: 100px; height: 100px;
-    background: var(--fruit-light, var(--accent-light));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
-    margin-bottom: 28px;
-    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-  @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .success-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 26px;
-    color: var(--text);
-    margin-bottom: 12px;
-    line-height: 1.2;
-  }
-  .success-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
-  .success-detail {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 20px;
-    width: 100%;
-    margin: 28px 0;
-    text-align: left;
-    box-shadow: var(--shadow);
-  }
-  .success-detail-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
-  .success-detail-row:last-child { border-bottom: none; }
-  .success-detail-row span:first-child { color: var(--text-muted); }
-  .success-detail-row span:last-child { font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
-
-  /* NAV BAR */
-  .nav-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 82px;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding-bottom: 16px;
-    z-index: 20;
-  }
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    padding: 8px 16px;
-    border-radius: 12px;
-    transition: background 0.2s;
-  }
-  .nav-item:active { background: var(--bg); }
-  .nav-item .nav-icon { font-size: 22px; }
-  .nav-item .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
-  .nav-item.active .nav-label { color: var(--accent); }
-
-  /* LOADING OVERLAY */
-  .loading-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(8px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-  }
-  .loading-overlay.show { opacity: 1; pointer-events: all; }
-  .spinner {
-    width: 48px; height: 48px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 16px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
-
-  /* ANIMATE IN */
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .anim-item { opacity: 0; animation: slideUp 0.4s ease forwards; }
-  .anim-item:nth-child(1) { animation-delay: 0.05s; }
-  .anim-item:nth-child(2) { animation-delay: 0.1s; }
-  .anim-item:nth-child(3) { animation-delay: 0.15s; }
-  .anim-item:nth-child(4) { animation-delay: 0.2s; }
-  .anim-item:nth-child(5) { animation-delay: 0.25s; }
-  .anim-item:nth-child(6) { animation-delay: 0.3s; }
+:root{--bg:#F5F2EE;--surface:#FFFFFF;--text:#1A1A1A;--text-muted:#8A8A8A;--border:#E8E4DE;--accent:#2D6A4F;--accent-light:#D8F3DC;--radius:20px;--radius-sm:12px;--shadow:0 4px 24px rgba(0,0,0,0.08);--shadow-lg:0 12px 40px rgba(0,0,0,0.14)}
+.fruit-avocado{--fruit-color:#2D6A4F;--fruit-light:#D8F3DC;--fruit-mid:#52B788}
+.fruit-strawberry{--fruit-color:#C1121F;--fruit-light:#FFE5E7;--fruit-mid:#E63946}
+.fruit-blueberry{--fruit-color:#3A0CA3;--fruit-light:#EDE7F6;--fruit-mid:#7B2FBE}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;min-height:100vh}
+.phone{width:100%;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden}
+.screen{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:90px;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;transform:translateX(30px)}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.screen.slide-back{transform:translateX(-30px);opacity:0}
+.status-bar{height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 6px;font-size:12px;font-weight:600;color:var(--text);position:sticky;top:0;z-index:10;background:var(--bg)}
+.status-right{display:flex;align-items:center;gap:8px}
+.notif-dot-btn{background:none;border:none;cursor:pointer;position:relative;font-size:18px;padding:2px;line-height:1}
+.notif-badge{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#E63946;border-radius:50%;border:2px solid var(--bg)}
+.menu-dots-btn{background:none;border:none;cursor:pointer;font-size:20px;padding:2px;line-height:1;letter-spacing:1px}
+.notif-panel{position:fixed;top:0;right:0;width:88%;max-width:340px;height:100%;background:var(--surface);z-index:300;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(0,0,0,.18);overflow-y:auto;scrollbar-width:none;padding-bottom:40px}
+.notif-panel.open{transform:translateX(0)}
+.notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:299;opacity:0;pointer-events:none;transition:opacity .3s}
+.notif-overlay.show{opacity:1;pointer-events:all}
+.notif-header{padding:52px 20px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.notif-title{font-family:'Syne',sans-serif;font-weight:800;font-size:20px}
+.notif-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted)}
+.notif-item{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start}
+.notif-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.notif-item-title{font-weight:600;font-size:14px;color:var(--text)}
+.notif-item-body{font-size:13px;color:var(--text-muted);margin-top:3px;line-height:1.4}
+.notif-item-time{font-size:11px;color:var(--text-muted);margin-top:5px}
+.notif-unread{background:#F0FFF4}
+.header{padding:8px 24px 16px}
+.header-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);letter-spacing:-.5px}
+.header-logo span{color:var(--accent)}
+.header-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.page-header{padding:8px 24px 20px}
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--text)}
+.page-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.fruit-tabs{padding:0 24px 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.fruit-tabs::-webkit-scrollbar{display:none}
+.fruit-tab{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:50px;border:2px solid var(--border);background:var(--surface);font-size:14px;font-weight:600;color:var(--text-muted);cursor:pointer;white-space:nowrap;transition:all .25s ease;font-family:'DM Sans',sans-serif}
+.fruit-tab.active{background:var(--fruit-color,var(--accent));border-color:var(--fruit-color,var(--accent));color:white;transform:scale(1.04);box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.fruit-tab .emoji{font-size:18px}
+.section-label{padding:4px 24px 12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.cards-row{display:flex;gap:14px;padding:0 24px 8px;overflow-x:auto;scrollbar-width:none}
+.cards-row::-webkit-scrollbar{display:none}
+.empaque-card{min-width:170px;background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:all .25s ease;border:2px solid transparent;position:relative;overflow:hidden}
+.empaque-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--fruit-color,var(--accent));border-radius:2px 2px 0 0}
+.empaque-card:active{transform:scale(.97)}
+.card-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text);margin-bottom:4px}
+.card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;font-weight:500;margin-bottom:2px}
+.card-price{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--fruit-color,var(--accent));margin:8px 0 4px}
+.card-price-sub{font-size:11px;color:var(--text-muted)}
+.btn-vender{margin-top:14px;width:100%;padding:10px;background:var(--fruit-color,var(--accent));color:white;border:none;border-radius:50px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-vender:active{transform:scale(.96)}
+.financiera-cards{padding:0 24px 20px;display:flex;flex-direction:column;gap:14px}
+.financiera-card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.financiera-card:active{transform:scale(.98)}
+.fin-logo{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:white;flex-shrink:0;text-align:center;line-height:1.2}
+.fin-info{flex:1}
+.fin-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.fin-rate{font-size:12px;color:var(--text-muted);margin-top:2px}
+.fin-rate strong{color:var(--fruit-color,var(--accent));font-size:14px}
+.fin-badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:50px;background:var(--fruit-light,var(--accent-light));color:var(--fruit-color,var(--accent));letter-spacing:.5px;text-transform:uppercase;text-align:center;max-width:72px}
+.back-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--accent);padding:8px 0}
+.form-card{background:var(--surface);border-radius:var(--radius);padding:20px;margin:0 24px 14px;box-shadow:var(--shadow)}
+.form-group{margin-bottom:16px}
+.form-group:last-child{margin-bottom:0}
+.form-label{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;display:block}
+.form-input{width:100%;padding:14px 16px;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);transition:border-color .2s;outline:none}
+.form-input:focus{border-color:var(--fruit-color,var(--accent))}
+.form-row{display:flex;gap:10px}
+.form-row .form-group{flex:1}
+.info-box{background:var(--fruit-light,var(--accent-light));border-radius:var(--radius-sm);padding:14px 16px;margin:0 24px 14px;display:flex;align-items:center;gap:10px}
+.info-box p{font-size:13px;color:var(--fruit-color,var(--accent));font-weight:500;line-height:1.4}
+.btn-primary{margin:0 24px 24px;width:calc(100% - 48px);padding:18px;background:var(--fruit-color,var(--accent));color:white;border:none;border-radius:var(--radius);font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.btn-primary:active{transform:scale(.97)}
+.screen2-header{padding:8px 24px 20px}
+.screen2-empaque-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--fruit-light,var(--accent-light));border-radius:50px;margin-bottom:12px}
+.screen2-empaque-badge span{font-size:13px;font-weight:600;color:var(--fruit-color,var(--accent))}
+.screen2-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);line-height:1.2;margin-bottom:4px}
+.screen2-sub{font-size:13px;color:var(--text-muted)}
+.summary-hero{background:var(--fruit-color,var(--accent));margin:0 24px 20px;border-radius:var(--radius);padding:24px;color:white}
+.summary-hero-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;margin-bottom:6px}
+.summary-hero-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:40px;letter-spacing:-1px}
+.summary-hero-sub{font-size:13px;opacity:.8;margin-top:4px}
+.summary-rows{background:var(--surface);border-radius:var(--radius);margin:0 24px 14px;overflow:hidden;box-shadow:var(--shadow)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+.summary-row:last-child{border-bottom:none}
+.summary-row-label{font-size:14px;color:var(--text-muted)}
+.summary-row-value{font-size:14px;font-weight:600;color:var(--text);font-family:'Syne',sans-serif}
+.summary-row-value.highlight{color:var(--fruit-color,var(--accent));font-size:16px}
+.upload-zone{margin:0 24px 16px;border:2.5px dashed var(--fruit-mid,var(--accent));border-radius:var(--radius);padding:32px 20px;text-align:center;background:var(--fruit-light,var(--accent-light));cursor:pointer;transition:all .2s}
+.upload-zone:active{transform:scale(.98)}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--fruit-color,var(--accent))}
+.upload-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.fin-select-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;margin:0 24px 12px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;transition:all .2s}
+.fin-select-card.selected{border-color:var(--fruit-color,var(--accent));background:var(--fruit-light,var(--accent-light))}
+.radio-circle{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.fin-select-card.selected .radio-circle{border-color:var(--fruit-color,var(--accent));background:var(--fruit-color,var(--accent))}
+.radio-dot{width:8px;height:8px;border-radius:50%;background:white;opacity:0;transition:opacity .2s}
+.fin-select-card.selected .radio-dot{opacity:1}
+.success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 32px 40px;min-height:100vh}
+.success-icon{width:100px;height:100px;background:var(--fruit-light,var(--accent-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:28px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--text);margin-bottom:12px;line-height:1.2}
+.success-sub{font-size:15px;color:var(--text-muted);line-height:1.6}
+.success-detail{background:var(--surface);border-radius:var(--radius);padding:20px;width:100%;margin:28px 0;text-align:left;box-shadow:var(--shadow)}
+.success-detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.success-detail-row:last-child{border-bottom:none}
+.success-detail-row span:first-child{color:var(--text-muted)}
+.success-detail-row span:last-child{font-weight:600;color:var(--text);font-family:'Syne',sans-serif}
+.venta-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;margin:0 24px 14px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;border-left:4px solid var(--accent)}
+.venta-card:active{transform:scale(.98)}
+.venta-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.venta-folio{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.venta-fecha{font-size:12px;color:var(--text-muted)}
+.venta-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.venta-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:50px;background:var(--bg);color:var(--text-muted);border:1px solid var(--border)}
+.venta-tag.fruit-avocado{background:#D8F3DC;color:#2D6A4F;border:none}
+.venta-tag.fruit-strawberry{background:#FFE5E7;color:#C1121F;border:none}
+.venta-tag.fruit-blueberry{background:#EDE7F6;color:#3A0CA3;border:none}
+.venta-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent)}
+.venta-empaque{font-size:12px;color:var(--text-muted);margin-top:2px}
+.venta-status{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;letter-spacing:.5px;text-transform:uppercase}
+.status-pagada{background:#D8F3DC;color:#2D6A4F}
+.status-pendiente{background:#FFF3CD;color:#856404}
+.status-en-proceso{background:#E3F2FD;color:#1565C0}
+.tab-pills{display:flex;gap:8px;padding:0 24px 16px}
+.tab-pill{padding:8px 20px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--surface);color:var(--text-muted);transition:all .2s;font-family:'DM Sans',sans-serif}
+.tab-pill.active{background:var(--accent);border-color:var(--accent);color:white}
+.factura-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;margin:0 24px 14px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;display:flex;gap:14px;align-items:center}
+.factura-card:active{transform:scale(.98)}
+.factura-icon-wrap{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.factura-info{flex:1}
+.factura-folio{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text)}
+.factura-empaque{font-size:12px;color:var(--text-muted);margin-top:2px}
+.factura-right{text-align:right}
+.factura-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--text)}
+.factura-date{font-size:11px;color:var(--text-muted);margin-top:3px}
+.perfil-hero{background:var(--accent);margin:0 24px 20px;border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:16px;color:white}
+.perfil-avatar{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:24px;flex-shrink:0}
+.perfil-name{font-family:'Syne',sans-serif;font-weight:800;font-size:18px}
+.perfil-rfc{font-size:13px;opacity:.8;margin-top:3px}
+.perfil-badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.perfil-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;background:rgba(255,255,255,.2);color:white;letter-spacing:.5px}
+.perfil-section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:0 24px 10px}
+.perfil-menu{background:var(--surface);border-radius:var(--radius);margin:0 24px 16px;overflow:hidden;box-shadow:var(--shadow)}
+.perfil-menu-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.perfil-menu-item:last-child{border-bottom:none}
+.perfil-menu-item:active{background:var(--bg)}
+.perfil-menu-icon{font-size:20px;flex-shrink:0;width:32px;text-align:center}
+.perfil-menu-label{flex:1;font-size:15px;font-weight:500;color:var(--text)}
+.perfil-menu-value{font-size:13px;color:var(--text-muted)}
+.perfil-menu-arrow{color:var(--text-muted);font-size:16px}
+.stats-row{display:flex;gap:12px;padding:0 24px 16px}
+.stat-card{flex:1;background:var(--surface);border-radius:var(--radius-sm);padding:16px;box-shadow:var(--shadow);text-align:center}
+.stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.detail-hero{background:var(--fruit-color,var(--accent));margin:0 24px 20px;border-radius:var(--radius);padding:24px;color:white}
+.detail-hero-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;margin-bottom:6px}
+.detail-hero-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:36px;letter-spacing:-1px}
+.detail-hero-sub{font-size:13px;opacity:.8;margin-top:4px}
+.detail-rows{background:var(--surface);border-radius:var(--radius);margin:0 24px 14px;overflow:hidden;box-shadow:var(--shadow)}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid var(--border)}
+.detail-row:last-child{border-bottom:none}
+.detail-row-label{font-size:14px;color:var(--text-muted)}
+.detail-row-value{font-size:14px;font-weight:600;color:var(--text);font-family:'Syne',sans-serif}
+.detail-row-value.highlight{color:var(--fruit-color,var(--accent))}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;height:72px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 16px;border-radius:12px;transition:background .2s}
+.nav-item:active{background:var(--bg)}
+.nav-item .nav-icon{font-size:22px}
+.nav-item .nav-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.5px}
+.nav-item.active .nav-label{color:var(--accent)}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+.loading-overlay.show{opacity:1;pointer-events:all}
+.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.anim-item{opacity:0;animation:slideUp .4s ease forwards}
+.anim-item:nth-child(1){animation-delay:.05s}
+.anim-item:nth-child(2){animation-delay:.1s}
+.anim-item:nth-child(3){animation-delay:.15s}
+.anim-item:nth-child(4){animation-delay:.2s}
+.anim-item:nth-child(5){animation-delay:.25s}
+.anim-item:nth-child(6){animation-delay:.3s}
+.divider-label{margin:4px 24px 10px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:10px}
+.divider-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.empty-state{text-align:center;padding:60px 32px}
+.empty-icon{font-size:52px;margin-bottom:16px;opacity:.5}
+.empty-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--text-muted)}
 </style>
 </head>
 <body>
 <div class="phone fruit-avocado" id="phone">
-  <div class="phone-notch"></div>
-  <div class="loading-overlay" id="loading">
-    <div class="spinner" id="spinnerEl"></div>
-    <p class="loading-text" id="loadingText">Procesando...</p>
+<div class="loading-overlay" id="loading"><div class="spinner" id="spinnerEl"></div><p class="loading-text" id="loadingText">Procesando...</p></div>
+
+<!-- NOTIF OVERLAY + PANEL -->
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotif()"></div>
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header"><div class="notif-title">Notificaciones</div><button class="notif-close" onclick="closeNotif()">×</button></div>
+  <div class="notif-item notif-unread"><div class="notif-icon">💰</div><div><div class="notif-item-title">Pago recibido</div><div class="notif-item-body">Calavo liquidó $24,000.00 por tu entrega del 10 de febrero.</div><div class="notif-item-time">Hace 2 horas</div></div></div>
+  <div class="notif-item notif-unread"><div class="notif-icon">📄</div><div><div class="notif-item-title">Factura procesada</div><div class="notif-item-body">BancaFresh confirmó la cesión de tu factura FAC-2025-003.</div><div class="notif-item-time">Ayer, 3:45 PM</div></div></div>
+  <div class="notif-item"><div class="notif-icon">🥑</div><div><div class="notif-item-title">Nuevo precio disponible</div><div class="notif-item-body">SV Fresh actualizó su precio de compra a $10.50/kg para aguacate Hass.</div><div class="notif-item-time">Hace 3 días</div></div></div>
+  <div class="notif-item"><div class="notif-icon">🏦</div><div><div class="notif-item-title">Oferta de financiamiento</div><div class="notif-item-body">AgroFin aumentó su anticipo a 89% por tiempo limitado esta temporada.</div><div class="notif-item-time">Hace 5 días</div></div></div>
+  <div class="notif-item"><div class="notif-icon">✅</div><div><div class="notif-item-title">Perfil verificado</div><div class="notif-item-body">Tu cuenta fue verificada exitosamente. Ya puedes operar con todas las financieras.</div><div class="notif-item-time">15 ene 2025</div></div></div>
+</div>
+
+<!-- SCREEN 1: INICIO -->
+<div class="screen active" id="screen1">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="notif-dot-btn" onclick="openNotif()">🔔<span class="notif-badge"></span></button><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="header anim-item"><div class="header-logo">Agro<span>Factor</span></div><div class="header-sub">Selecciona tu fruta y elige un empaque</div></div>
+  <div class="fruit-tabs anim-item" id="fruitTabs">
+    <button class="fruit-tab active" onclick="selectFruit('avocado',this)"><span class="emoji">🥑</span> Aguacate</button>
+    <button class="fruit-tab" onclick="selectFruit('strawberry',this)"><span class="emoji">🍓</span> Fresa</button>
+    <button class="fruit-tab" onclick="selectFruit('blueberry',this)"><span class="emoji">🫐</span> Arándano</button>
   </div>
-
-  <!-- ==================== SCREEN 1: HOME ==================== -->
-  <div class="screen active" id="screen1">
-    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
-    <div class="header anim-item">
-      <div class="header-logo">Agro<span>Factor</span></div>
-      <div class="header-sub">Elige tu fruta y selecciona un empaque</div>
-    </div>
-
-    <div class="fruit-tabs anim-item" id="fruitTabs">
-      <button class="fruit-tab active" onclick="selectFruit('avocado',this)"><span class="emoji">🥑</span> Aguacate</button>
-      <button class="fruit-tab" onclick="selectFruit('strawberry',this)"><span class="emoji">🍓</span> Fresa</button>
-      <button class="fruit-tab" onclick="selectFruit('blueberry',this)"><span class="emoji">🫐</span> Arándano</button>
-    </div>
-
-    <div class="section-label anim-item">Empaques disponibles</div>
-    <div class="cards-row anim-item" id="empaqueCards">
-      <!-- Populated by JS -->
-    </div>
-
-    <div class="section-label anim-item" style="margin-top:8px">Financieras asociadas</div>
-    <div class="financiera-cards anim-item" id="financieraCards">
-      <!-- Populated by JS -->
-    </div>
-
-  </div>
-
-  <!-- ==================== SCREEN 2: VENTA FORM ==================== -->
-  <div class="screen" id="screen2">
-    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
-    <div class="screen2-header">
-      <button class="back-btn" onclick="goBack(2)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Regresar
-      </button>
-      <div class="screen2-empaque-badge">
-        <span id="s2EmpaqueLabel">SV Fresh · Aguacate</span>
-      </div>
-      <div class="screen2-title">Detalle de<br>tu venta</div>
-      <div class="screen2-sub">Llena los campos para generar tu factura</div>
-    </div>
-
-    <div class="form-card" id="fruitFormCard">
-      <!-- Populated dynamically by JS based on selected fruit -->
-    </div>
-
-    <div class="info-box">
-      <span style="font-size:20px">💡</span>
-      <p>El empaque liquidará el pago en <strong id="diasPago">15</strong> días hábiles tras la entrega.</p>
-    </div>
-
-    <div class="form-card" id="previewCard" style="border:2px solid var(--fruit-color, var(--accent))">
-      <div style="font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">Estimado de pago</div>
-      <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--fruit-color,var(--accent))" id="totalEstimado">$0.00</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Precio empaque × cantidad ingresada</div>
-    </div>
-
-    <button class="btn-primary anim-item" onclick="goToResumen()">
-      Ver resumen completo
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-  </div>
-
-  <!-- ==================== SCREEN 3: RESUMEN ==================== -->
-  <div class="screen" id="screen3">
-    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
-    <div class="screen2-header">
-      <button class="back-btn" onclick="goBack(3)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Editar datos
-      </button>
-      <div class="screen2-title">Confirma tu<br>operación</div>
-      <div class="screen2-sub">Revisa los totales antes de continuar</div>
-    </div>
-
-    <div class="summary-hero">
-      <div class="summary-hero-label">Total a recibir del empaque</div>
-      <div class="summary-hero-amount" id="s3Total">$0.00</div>
-      <div class="summary-hero-sub" id="s3Empaque">SV Fresh · Aguacate</div>
-    </div>
-
-    <div class="summary-rows">
-      <div class="summary-row"><span class="summary-row-label">Empaque</span><span class="summary-row-value" id="s3EmpaqueNombre">SV Fresh</span></div>
-      <div class="summary-row"><span class="summary-row-label">Fruta</span><span class="summary-row-value" id="s3Fruta">Aguacate Hass</span></div>
-      <div class="summary-row"><span class="summary-row-label">Cantidad</span><span class="summary-row-value" id="s3Cantidad">— kg</span></div>
-      <div class="summary-row"><span class="summary-row-label">Precio / kg</span><span class="summary-row-value" id="s3Precio">$0.00</span></div>
-      <div class="summary-row"><span class="summary-row-label">Fecha de entrega</span><span class="summary-row-value" id="s3Fecha">—</span></div>
-      <div class="summary-row"><span class="summary-row-label">Pago en</span><span class="summary-row-value" id="s3Dias">15 días hábiles</span></div>
-      <div class="summary-row"><span class="summary-row-label"><strong>TOTAL</strong></span><span class="summary-row-value highlight" id="s3TotalRow">$0.00</span></div>
-    </div>
-
-    <div class="info-box">
-      <span style="font-size:20px">📅</span>
-      <p>Fecha estimada de liquidación: <strong id="s3FechaLiquidacion">—</strong></p>
-    </div>
-
-    <button class="btn-primary" onclick="goToFactura()">
-      Cargar factura y solicitar anticipo
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-  </div>
-
-  <!-- ==================== SCREEN 4: FACTURA / FINANCIERA ==================== -->
-  <div class="screen" id="screen4">
-    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
-    <div class="screen2-header">
-      <button class="back-btn" onclick="goBack(4)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Regresar
-      </button>
-      <div class="screen2-title">Factoraje<br>financiero</div>
-      <div class="screen2-sub">Sube tu factura y selecciona tu financiera</div>
-    </div>
-
-    <div class="upload-zone" id="uploadZone" onclick="simulateUpload()">
-      <div class="upload-icon" id="uploadIcon">📂</div>
-      <div class="upload-title" id="uploadTitle">Cargar factura XML / PDF</div>
-      <div class="upload-sub" id="uploadSub">Toca para seleccionar desde tu dispositivo</div>
-    </div>
-
-    <div class="section-label" style="padding:4px 24px 10px">Selecciona tu financiera</div>
-
-    <div class="fin-select-card" id="finCard0" onclick="selectFinanciera(0)">
-      <div class="radio-circle"><div class="radio-dot"></div></div>
-      <div class="fin-logo" style="background:#1565C0">BF</div>
-      <div class="fin-info">
-        <div class="fin-name">BancaFresh</div>
-        <div class="fin-rate">Anticipo: <strong>90%</strong> inmediato</div>
-      </div>
-      <div class="fin-badge">Promo 🔥</div>
-    </div>
-    <div class="fin-select-card" id="finCard1" onclick="selectFinanciera(1)">
-      <div class="radio-circle"><div class="radio-dot"></div></div>
-      <div class="fin-logo" style="background:#6A1B9A">AgroFin</div>
-      <div class="fin-info">
-        <div class="fin-name">AgroFin</div>
-        <div class="fin-rate">Anticipo: <strong>88%</strong> inmediato</div>
-      </div>
-      <div class="fin-badge">Popular</div>
-    </div>
-    <div class="fin-select-card" id="finCard2" onclick="selectFinanciera(2)">
-      <div class="radio-circle"><div class="radio-dot"></div></div>
-      <div class="fin-logo" style="background:#2E7D32">FinVerde</div>
-      <div class="fin-info">
-        <div class="fin-name">FinVerde</div>
-        <div class="fin-rate">Anticipo: <strong>84%</strong> inmediato</div>
-      </div>
-      <div class="fin-badge">Estable</div>
-    </div>
-    <div class="fin-select-card" id="finCard3" onclick="selectFinanciera(3)">
-      <div class="radio-circle"><div class="radio-dot"></div></div>
-      <div class="fin-logo" style="background:#E65100">CampoCredi</div>
-      <div class="fin-info">
-        <div class="fin-name">CampoCredi</div>
-        <div class="fin-rate">Anticipo: <strong>80%</strong> inmediato</div>
-      </div>
-      <div class="fin-badge">Básico</div>
-    </div>
-
-    <div class="form-card" id="anticipoCard" style="margin-bottom:0">
-      <div style="font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Recibirás de inmediato</div>
-      <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--fruit-color,var(--accent))" id="anticipoMonto">$0.00</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="anticipoDesc">Selecciona una financiera</div>
-    </div>
-
-    <button class="btn-primary" style="margin-top:14px" onclick="confirmar()">
-      Confirmar y ceder factura
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-  </div>
-
-  <!-- ==================== SCREEN 5: SUCCESS ==================== -->
-  <div class="screen" id="screen5">
-    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
-    <div class="success-screen">
-      <div class="success-icon">✅</div>
-      <div class="success-title">¡Operación<br>completada!</div>
-      <div class="success-sub">Tu factura fue cedida exitosamente. El anticipo estará en tu cuenta en minutos.</div>
-      <div class="success-detail" id="successDetail">
-        <div class="success-detail-row"><span>Empaque</span><span id="sd-empaque">SV Fresh</span></div>
-        <div class="success-detail-row"><span>Financiera</span><span id="sd-fin">BancaFresh</span></div>
-        <div class="success-detail-row"><span>Anticipo recibido</span><span id="sd-anticipo">$0.00</span></div>
-        <div class="success-detail-row"><span>Saldo restante</span><span id="sd-restante">$0.00</span></div>
-        <div class="success-detail-row"><span>Fecha liquidación</span><span id="sd-fecha">—</span></div>
-      </div>
-      <button class="btn-primary" style="margin:0;width:100%" onclick="goHome()">
-        Volver al inicio
-      </button>
-    </div>
-  </div>
-  <!-- GLOBAL NAV BAR — always visible -->
-  <div class="nav-bar" id="globalNav">
-    <div class="nav-item active" id="nav-inicio"><div class="nav-icon">🏠</div><div class="nav-label">Inicio</div></div>
-    <div class="nav-item" id="nav-ventas"><div class="nav-icon">📋</div><div class="nav-label">Mis ventas</div></div>
-    <div class="nav-item" id="nav-facturas"><div class="nav-icon">📄</div><div class="nav-label">Facturas</div></div>
-    <div class="nav-item" id="nav-perfil"><div class="nav-icon">👤</div><div class="nav-label">Perfil</div></div>
+  <div class="section-label anim-item">Empaques disponibles</div>
+  <div class="cards-row anim-item" id="empaqueCards"></div>
+  <div class="section-label anim-item" style="margin-top:8px">Financieras asociadas</div>
+  <div class="financiera-cards anim-item">
+    <div class="financiera-card"><div class="fin-logo" style="background:#1565C0">BF</div><div class="fin-info"><div class="fin-name">BancaFresh</div><div class="fin-rate">Anticipo: <strong>90%</strong> inmediato</div></div><div class="fin-badge">Promo 🔥</div></div>
+    <div class="financiera-card"><div class="fin-logo" style="background:#6A1B9A">AF</div><div class="fin-info"><div class="fin-name">AgroFin</div><div class="fin-rate">Anticipo: <strong>88%</strong> inmediato</div></div><div class="fin-badge">Popular</div></div>
+    <div class="financiera-card"><div class="fin-logo" style="background:#2E7D32">FV</div><div class="fin-info"><div class="fin-name">FinVerde</div><div class="fin-rate">Anticipo: <strong>84%</strong> inmediato</div></div><div class="fin-badge">Estable</div></div>
+    <div class="financiera-card"><div class="fin-logo" style="background:#E65100">CC</div><div class="fin-info"><div class="fin-name">CampoCredi</div><div class="fin-rate">Anticipo: <strong>80%</strong> inmediato</div></div><div class="fin-badge">Básico</div></div>
   </div>
 </div>
+
+<!-- SCREEN 2: FORM VENTA -->
+<div class="screen" id="screen2">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="screen2-header">
+    <button class="back-btn" onclick="navTo(1,true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Regresar</button>
+    <div class="screen2-empaque-badge"><span id="s2EmpaqueLabel">SV Fresh · Aguacate</span></div>
+    <div class="screen2-title">Detalle de<br>tu venta</div>
+    <div class="screen2-sub">Llena los campos para generar tu factura</div>
+  </div>
+  <div class="form-card" id="fruitFormCard"></div>
+  <div class="info-box"><span style="font-size:20px">💡</span><p>El empaque liquidará el pago en <strong id="diasPago">15</strong> días hábiles tras la entrega.</p></div>
+  <div class="form-card" style="border:2px solid var(--fruit-color,var(--accent))">
+    <div style="font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Estimado de pago</div>
+    <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--fruit-color,var(--accent))" id="totalEstimado">$0.00</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Precio empaque × cantidad ingresada</div>
+  </div>
+  <button class="btn-primary" onclick="goToResumen()">Ver resumen completo <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+</div>
+
+<!-- SCREEN 3: RESUMEN -->
+<div class="screen" id="screen3">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="screen2-header">
+    <button class="back-btn" onclick="navTo(2,true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Editar datos</button>
+    <div class="screen2-title">Confirma tu<br>operación</div>
+    <div class="screen2-sub">Revisa los totales antes de continuar</div>
+  </div>
+  <div class="summary-hero"><div class="summary-hero-label">Total a recibir del empaque</div><div class="summary-hero-amount" id="s3Total">$0.00</div><div class="summary-hero-sub" id="s3Empaque">SV Fresh</div></div>
+  <div class="summary-rows">
+    <div class="summary-row"><span class="summary-row-label">Empaque</span><span class="summary-row-value" id="s3EmpaqueNombre">—</span></div>
+    <div class="summary-row"><span class="summary-row-label">Fruta</span><span class="summary-row-value" id="s3Fruta">—</span></div>
+    <div class="summary-row"><span class="summary-row-label">Cantidad</span><span class="summary-row-value" id="s3Cantidad">—</span></div>
+    <div class="summary-row"><span class="summary-row-label">Precio / kg</span><span class="summary-row-value" id="s3Precio">—</span></div>
+    <div class="summary-row"><span class="summary-row-label">Fecha de entrega</span><span class="summary-row-value" id="s3Fecha">—</span></div>
+    <div class="summary-row"><span class="summary-row-label">Liquidación en</span><span class="summary-row-value" id="s3Dias">—</span></div>
+    <div class="summary-row"><span class="summary-row-label"><strong>TOTAL</strong></span><span class="summary-row-value highlight" id="s3TotalRow">—</span></div>
+  </div>
+  <div class="info-box"><span style="font-size:20px">📅</span><p>Fecha estimada de liquidación: <strong id="s3FechaLiquidacion">—</strong></p></div>
+  <button class="btn-primary" onclick="goToFactura()">Cargar factura y solicitar anticipo <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+</div>
+
+<!-- SCREEN 4: FACTORAJE -->
+<div class="screen" id="screen4">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="screen2-header">
+    <button class="back-btn" onclick="navTo(3,true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Regresar</button>
+    <div class="screen2-title">Factoraje<br>financiero</div>
+    <div class="screen2-sub">Sube tu factura y selecciona tu financiera</div>
+  </div>
+  <div class="upload-zone" id="uploadZone" onclick="simulateUpload()"><div class="upload-icon" id="uploadIcon">📂</div><div class="upload-title" id="uploadTitle">Cargar factura XML / PDF</div><div class="upload-sub" id="uploadSub">Toca para seleccionar desde tu dispositivo</div></div>
+  <div class="section-label" style="padding:4px 24px 10px">Selecciona tu financiera</div>
+  <div class="fin-select-card" id="finCard0" onclick="selectFinanciera(0)"><div class="radio-circle"><div class="radio-dot"></div></div><div class="fin-logo" style="background:#1565C0">BF</div><div class="fin-info"><div class="fin-name">BancaFresh</div><div class="fin-rate">Anticipo: <strong>90%</strong></div></div><div class="fin-badge">Promo 🔥</div></div>
+  <div class="fin-select-card" id="finCard1" onclick="selectFinanciera(1)"><div class="radio-circle"><div class="radio-dot"></div></div><div class="fin-logo" style="background:#6A1B9A">AF</div><div class="fin-info"><div class="fin-name">AgroFin</div><div class="fin-rate">Anticipo: <strong>88%</strong></div></div><div class="fin-badge">Popular</div></div>
+  <div class="fin-select-card" id="finCard2" onclick="selectFinanciera(2)"><div class="radio-circle"><div class="radio-dot"></div></div><div class="fin-logo" style="background:#2E7D32">FV</div><div class="fin-info"><div class="fin-name">FinVerde</div><div class="fin-rate">Anticipo: <strong>84%</strong></div></div><div class="fin-badge">Estable</div></div>
+  <div class="fin-select-card" id="finCard3" onclick="selectFinanciera(3)"><div class="radio-circle"><div class="radio-dot"></div></div><div class="fin-logo" style="background:#E65100">CC</div><div class="fin-info"><div class="fin-name">CampoCredi</div><div class="fin-rate">Anticipo: <strong>80%</strong></div></div><div class="fin-badge">Básico</div></div>
+  <div class="form-card" style="margin-bottom:0"><div style="font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Recibirás de inmediato</div><div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--fruit-color,var(--accent))" id="anticipoMonto">$0.00</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="anticipoDesc">Selecciona una financiera</div></div>
+  <button class="btn-primary" style="margin-top:14px" onclick="confirmar()">Confirmar y ceder factura <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+</div>
+
+<!-- SCREEN 5: EXITO -->
+<div class="screen" id="screen5">
+  <div class="status-bar"><span>9:41</span><div class="status-right"></div></div>
+  <div class="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">¡Operación<br>completada!</div>
+    <div class="success-sub">Tu factura fue cedida exitosamente. El anticipo estará en tu cuenta en minutos.</div>
+    <div class="success-detail">
+      <div class="success-detail-row"><span>Empaque</span><span id="sd-empaque">—</span></div>
+      <div class="success-detail-row"><span>Financiera</span><span id="sd-fin">—</span></div>
+      <div class="success-detail-row"><span>Anticipo recibido</span><span id="sd-anticipo">—</span></div>
+      <div class="success-detail-row"><span>Saldo restante</span><span id="sd-restante">—</span></div>
+      <div class="success-detail-row"><span>Fecha liquidación</span><span id="sd-fecha">—</span></div>
+    </div>
+    <button class="btn-primary" style="margin:0;width:100%" onclick="navTo(1,true);setNav('nav-inicio')">Volver al inicio</button>
+  </div>
+</div>
+
+<!-- SCREEN 6: MIS VENTAS -->
+<div class="screen" id="screen6">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="page-header anim-item"><div class="page-title">Mis ventas</div><div class="page-sub">Historial de operaciones</div></div>
+  <div class="stats-row anim-item">
+    <div class="stat-card"><div class="stat-value">4</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:#2D6A4F">3</div><div class="stat-label">Pagadas</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:#856404">1</div><div class="stat-label">Pendiente</div></div>
+  </div>
+  <div class="divider-label anim-item">Recientes</div>
+  <div class="venta-card anim-item" style="border-left-color:#856404" onclick="showVenta(0)">
+    <div class="venta-card-top"><div class="venta-folio">VNT-2025-004</div><div class="venta-fecha">18 feb 2025</div></div>
+    <div class="venta-meta"><span class="venta-tag fruit-strawberry">🍓 Fresa Albión</span><span class="venta-tag">BerryPack</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="venta-amount" style="color:#856404">$44,000.00</div><div class="venta-empaque">2,000 kg · $22/kg</div></div><span class="venta-status status-pendiente">Pendiente</span></div>
+  </div>
+  <div class="venta-card anim-item" onclick="showVenta(1)">
+    <div class="venta-card-top"><div class="venta-folio">VNT-2025-003</div><div class="venta-fecha">3 feb 2025</div></div>
+    <div class="venta-meta"><span class="venta-tag fruit-avocado">🥑 Aguacate Hass</span><span class="venta-tag">Calavo</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="venta-amount">$24,000.00</div><div class="venta-empaque">2,000 kg · $12/kg</div></div><span class="venta-status status-pagada">Pagada</span></div>
+  </div>
+  <div class="venta-card anim-item" onclick="showVenta(2)">
+    <div class="venta-card-top"><div class="venta-folio">VNT-2025-002</div><div class="venta-fecha">15 ene 2025</div></div>
+    <div class="venta-meta"><span class="venta-tag fruit-blueberry">🫐 Arándano Biloxi</span><span class="venta-tag">BlueFarm</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="venta-amount">$52,500.00</div><div class="venta-empaque">1,500 kg · $35/kg</div></div><span class="venta-status status-pagada">Pagada</span></div>
+  </div>
+  <div class="venta-card anim-item" onclick="showVenta(3)">
+    <div class="venta-card-top"><div class="venta-folio">VNT-2025-001</div><div class="venta-fecha">5 ene 2025</div></div>
+    <div class="venta-meta"><span class="venta-tag fruit-avocado">🥑 Aguacate Hass</span><span class="venta-tag">SV Fresh</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="venta-amount">$19,000.00</div><div class="venta-empaque">1,900 kg · $10/kg</div></div><span class="venta-status status-pagada">Pagada</span></div>
+  </div>
+</div>
+
+<!-- SCREEN 7: DETALLE VENTA -->
+<div class="screen" id="screen7">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="screen2-header">
+    <button class="back-btn" onclick="navTo(6,true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Mis ventas</button>
+    <div class="screen2-title" id="s7Title">Detalle de venta</div>
+    <div class="screen2-sub" id="s7Sub">—</div>
+  </div>
+  <div class="detail-hero"><div class="detail-hero-label">Total de la venta</div><div class="detail-hero-amount" id="s7Amount">$0.00</div><div class="detail-hero-sub" id="s7Sub2">—</div></div>
+  <div class="detail-rows" id="s7Rows"></div>
+  <div class="info-box"><span style="font-size:20px" id="s7Icon">📅</span><p id="s7Info">—</p></div>
+</div>
+
+<!-- SCREEN 8: FACTURAS -->
+<div class="screen" id="screen8">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="page-header anim-item"><div class="page-title">Facturas</div><div class="page-sub">Registro de documentos emitidos</div></div>
+  <div class="tab-pills anim-item" id="facturasTabs">
+    <button class="tab-pill active" onclick="filterFact('todas',this)">Todas</button>
+    <button class="tab-pill" onclick="filterFact('pendiente',this)">Pendientes</button>
+    <button class="tab-pill" onclick="filterFact('pagada',this)">Pagadas</button>
+  </div>
+  <div id="facturasContainer"></div>
+</div>
+
+<!-- SCREEN 9: DETALLE FACTURA -->
+<div class="screen" id="screen9">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="screen2-header">
+    <button class="back-btn" onclick="navTo(8,true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Facturas</button>
+    <div class="screen2-title" id="s9Title">Detalle de factura</div>
+    <div class="screen2-sub" id="s9Sub">—</div>
+  </div>
+  <div class="detail-hero"><div class="detail-hero-label">Monto de la factura</div><div class="detail-hero-amount" id="s9Amount">$0.00</div><div class="detail-hero-sub" id="s9Sub2">—</div></div>
+  <div class="detail-rows" id="s9Rows"></div>
+  <div class="info-box"><span style="font-size:20px" id="s9Icon">🏦</span><p id="s9Info">—</p></div>
+</div>
+
+<!-- SCREEN 10: PERFIL -->
+<div class="screen" id="screen10">
+  <div class="status-bar"><span>9:41</span><div class="status-right"><button class="menu-dots-btn" onclick="openNotif()">···</button></div></div>
+  <div class="page-header anim-item"><div class="page-title">Perfil</div><div class="page-sub">Tu cuenta y configuración</div></div>
+  <div class="perfil-hero anim-item">
+    <div class="perfil-avatar">JH</div>
+    <div><div class="perfil-name">Javier Huarota</div><div class="perfil-rfc">RFC: HUJX850312AB3</div>
+      <div class="perfil-badge-row"><span class="perfil-badge">✓ Verificado</span><span class="perfil-badge">⭐ 3 años</span><span class="perfil-badge">🏅 Premium</span></div>
+    </div>
+  </div>
+  <div class="stats-row anim-item">
+    <div class="stat-card"><div class="stat-value">4</div><div class="stat-label">Ventas</div></div>
+    <div class="stat-card"><div class="stat-value">$139K</div><div class="stat-label">Facturado</div></div>
+    <div class="stat-card"><div class="stat-value">100%</div><div class="stat-label">Al corriente</div></div>
+  </div>
+  <div class="perfil-section-title anim-item">Datos personales</div>
+  <div class="perfil-menu anim-item">
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">👤</div><div class="perfil-menu-label">Nombre completo</div><div class="perfil-menu-value">Javier Huarota</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">📱</div><div class="perfil-menu-label">Teléfono</div><div class="perfil-menu-value">+52 452 123 4567</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">✉️</div><div class="perfil-menu-label">Correo electrónico</div><div class="perfil-menu-value">javier@rancho.mx</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">📍</div><div class="perfil-menu-label">Municipio de origen</div><div class="perfil-menu-value">Tancítaro, Mich.</div><div class="perfil-menu-arrow">›</div></div>
+  </div>
+  <div class="perfil-section-title anim-item">Datos fiscales</div>
+  <div class="perfil-menu anim-item">
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🏢</div><div class="perfil-menu-label">Razón social</div><div class="perfil-menu-value">Rancho El Huaroto S.A.</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🔢</div><div class="perfil-menu-label">RFC</div><div class="perfil-menu-value">HUJX850312AB3</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🏦</div><div class="perfil-menu-label">CLABE bancaria</div><div class="perfil-menu-value">••• 4521</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">📄</div><div class="perfil-menu-label">Régimen fiscal</div><div class="perfil-menu-value">Actividades agrícolas</div><div class="perfil-menu-arrow">›</div></div>
+  </div>
+  <div class="perfil-section-title anim-item">Estatus del productor</div>
+  <div class="perfil-menu anim-item">
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">⭐</div><div class="perfil-menu-label">Antigüedad en plataforma</div><div class="perfil-menu-value" style="color:#2D6A4F;font-weight:700">3 años</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">✅</div><div class="perfil-menu-label">Verificación de identidad</div><div class="perfil-menu-value" style="color:#2D6A4F;font-weight:700">Aprobada</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🛡️</div><div class="perfil-menu-label">Nivel de confianza</div><div class="perfil-menu-value" style="color:#2D6A4F;font-weight:700">Premium</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">📊</div><div class="perfil-menu-label">Historial crediticio</div><div class="perfil-menu-value" style="color:#2D6A4F;font-weight:700">Excelente</div><div class="perfil-menu-arrow">›</div></div>
+  </div>
+  <div class="perfil-section-title anim-item">Configuración</div>
+  <div class="perfil-menu anim-item">
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🔔</div><div class="perfil-menu-label">Notificaciones</div><div class="perfil-menu-value">Activadas</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🌐</div><div class="perfil-menu-label">Idioma</div><div class="perfil-menu-value">Español</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🔒</div><div class="perfil-menu-label">Seguridad y acceso</div><div class="perfil-menu-value">PIN + biométrico</div><div class="perfil-menu-arrow">›</div></div>
+    <div class="perfil-menu-item"><div class="perfil-menu-icon">🚪</div><div class="perfil-menu-label" style="color:#C1121F">Cerrar sesión</div></div>
+  </div>
+</div>
+
+<!-- GLOBAL NAV -->
+<div class="nav-bar">
+  <div class="nav-item active" id="nav-inicio" onclick="navTo(1,true);setNav('nav-inicio')"><div class="nav-icon">🏠</div><div class="nav-label">Inicio</div></div>
+  <div class="nav-item" id="nav-ventas" onclick="navTo(6);setNav('nav-ventas')"><div class="nav-icon">📋</div><div class="nav-label">Mis ventas</div></div>
+  <div class="nav-item" id="nav-facturas" onclick="navTo(8);setNav('nav-facturas');renderFact('todas')"><div class="nav-icon">📄</div><div class="nav-label">Facturas</div></div>
+  <div class="nav-item" id="nav-perfil" onclick="navTo(10);setNav('nav-perfil')"><div class="nav-icon">👤</div><div class="nav-label">Perfil</div></div>
+</div>
+</div>
+
 <script>
-const FRUITS = {
-  avocado: {
-    class: 'fruit-avocado',
-    empaques: [
-      { name: 'SV Fresh', price: 10, dias: 15 },
-      { name: 'Calavo', price: 12, dias: 20 },
-      { name: 'JR Produce', price: 9.5, dias: 12 },
-      { name: 'MX Export', price: 11, dias: 18 },
-    ]
-  },
-  strawberry: {
-    class: 'fruit-strawberry',
-    empaques: [
-      { name: 'BerryPack', price: 22, dias: 10 },
-      { name: 'FreshRed', price: 18, dias: 14 },
-      { name: 'SunBerry', price: 25, dias: 8 },
-    ]
-  },
-  blueberry: {
-    class: 'fruit-blueberry',
-    empaques: [
-      { name: 'BlueFarm', price: 35, dias: 14 },
-      { name: 'Wild Blue', price: 40, dias: 21 },
-      { name: 'Pacific Blue', price: 38, dias: 17 },
-    ]
-  }
-};
+const FRUITS={avocado:{class:'fruit-avocado',empaques:[{name:'SV Fresh',price:10,dias:15},{name:'Calavo',price:12,dias:20},{name:'JR Produce',price:9.5,dias:12},{name:'MX Export',price:11,dias:18}]},strawberry:{class:'fruit-strawberry',empaques:[{name:'BerryPack',price:22,dias:10},{name:'FreshRed',price:18,dias:14},{name:'SunBerry',price:25,dias:8}]},blueberry:{class:'fruit-blueberry',empaques:[{name:'BlueFarm',price:35,dias:14},{name:'Wild Blue',price:40,dias:21},{name:'Pacific Blue',price:38,dias:17}]}};
+const FR=[0.90,0.88,0.84,0.80];
+const FN=['BancaFresh','AgroFin','FinVerde','CampoCredi'];
+const VENTAS=[
+{folio:'VNT-2025-004',fecha:'18 feb 2025',fruta:'Fresa Albión',fc:'fruit-strawberry',emoji:'🍓',empaque:'BerryPack',kg:2000,precio:22,total:44000,dias:10,estado:'Pendiente',ecls:'status-pendiente',entrega:'28 feb 2025',liq:'10 mar 2025',fin:'AgroFin',finC:'#6A1B9A',pct:'88%',ant:38720,calibre:'Grande (+28mm)',calidad:'Firme — transporte largo',mun:'Irapuato, Gto.'},
+{folio:'VNT-2025-003',fecha:'3 feb 2025',fruta:'Aguacate Hass',fc:'fruit-avocado',emoji:'🥑',empaque:'Calavo',kg:2000,precio:12,total:24000,dias:20,estado:'Pagada',ecls:'status-pagada',entrega:'10 feb 2025',liq:'28 feb 2025',fin:'BancaFresh',finC:'#1565C0',pct:'90%',ant:21600,calibre:'Calibre 36',calidad:'Extra — sin defectos',mun:'Tancítaro, Mich.'},
+{folio:'VNT-2025-002',fecha:'15 ene 2025',fruta:'Arándano Biloxi',fc:'fruit-blueberry',emoji:'🫐',empaque:'BlueFarm',kg:1500,precio:35,total:52500,dias:14,estado:'Pagada',ecls:'status-pagada',entrega:'22 ene 2025',liq:'5 feb 2025',fin:'FinVerde',finC:'#2E7D32',pct:'84%',ant:44100,calibre:'Jumbo (+18mm)',calidad:'Azul uniforme',mun:'Jalisco'},
+{folio:'VNT-2025-001',fecha:'5 ene 2025',fruta:'Aguacate Hass',fc:'fruit-avocado',emoji:'🥑',empaque:'SV Fresh',kg:1900,precio:10,total:19000,dias:15,estado:'Pagada',ecls:'status-pagada',entrega:'12 ene 2025',liq:'27 ene 2025',fin:'CampoCredi',finC:'#E65100',pct:'80%',ant:15200,calibre:'Calibre 48',calidad:'Primera',mun:'Tancítaro, Mich.'}
+];
+const FACTS=[
+{folio:'FAC-2025-004',fecha:'28 feb 2025',empaque:'BerryPack',fruta:'Fresa Albión',emoji:'🍓',fc:'fruit-strawberry',total:44000,ant:38720,rest:5280,estado:'pendiente',fin:'AgroFin',finC:'#6A1B9A',vence:'10 mar 2025',uuid:'UUID-A834-FF21-0041',serie:'FAC-B'},
+{folio:'FAC-2025-003',fecha:'10 feb 2025',empaque:'Calavo',fruta:'Aguacate Hass',emoji:'🥑',fc:'fruit-avocado',total:24000,ant:21600,rest:2400,estado:'pagada',fin:'BancaFresh',finC:'#1565C0',vence:'28 feb 2025',uuid:'UUID-B412-CC93-0038',serie:'FAC-A'},
+{folio:'FAC-2025-002',fecha:'22 ene 2025',empaque:'BlueFarm',fruta:'Arándano Biloxi',emoji:'🫐',fc:'fruit-blueberry',total:52500,ant:44100,rest:8400,estado:'pagada',fin:'FinVerde',finC:'#2E7D32',vence:'5 feb 2025',uuid:'UUID-C991-DD74-0029',serie:'FAC-A'},
+{folio:'FAC-2025-001',fecha:'12 ene 2025',empaque:'SV Fresh',fruta:'Aguacate Hass',emoji:'🥑',fc:'fruit-avocado',total:19000,ant:15200,rest:3800,estado:'pagada',fin:'CampoCredi',finC:'#E65100',vence:'27 ene 2025',uuid:'UUID-D105-EE62-0011',serie:'FAC-A'}
+];
+let st={fruit:'avocado',empaque:null,cantidad:0,finSel:-1,uploaded:false};
 
-const FIN_RATES = [0.90, 0.88, 0.84, 0.80];
-const FIN_NAMES = ['BancaFresh','AgroFin','FinVerde','CampoCredi'];
+function navTo(n,back=false){document.querySelectorAll('.screen').forEach((s,i)=>{s.classList.remove('active','slide-back');if(!back&&i<n-1)s.classList.add('slide-back')});const t=document.getElementById('screen'+n);t.classList.add('active');t.scrollTop=0;}
+function setNav(id){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function openNotif(){document.getElementById('notifPanel').classList.add('open');document.getElementById('notifOverlay').classList.add('show');}
+function closeNotif(){document.getElementById('notifPanel').classList.remove('open');document.getElementById('notifOverlay').classList.remove('show');}
 
-let state = {
-  fruit: 'avocado',
-  empaque: null,
-  cantidad: 0,
-  finSelected: -1,
-  uploaded: false,
-};
+function selectFruit(f,el){st.fruit=f;document.getElementById('phone').className='phone '+FRUITS[f].class;document.querySelectorAll('.fruit-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderEmp();}
+function renderEmp(){const d=FRUITS[st.fruit].empaques;document.getElementById('empaqueCards').innerHTML=d.map((e,i)=>`<div class="empaque-card anim-item" onclick="selEmp(${i})"><div class="card-label">Empaque</div><div class="card-name">${e.name}</div><div class="card-label" style="margin-top:8px">Precio compra</div><div class="card-price">$${e.price}<span class="card-price-sub"> /kg</span></div><button class="btn-vender">Vender aquí</button></div>`).join('');}
 
-function selectFruit(fruit, el) {
-  state.fruit = fruit;
-  document.getElementById('phone').className = 'phone ' + FRUITS[fruit].class;
-  document.querySelectorAll('.fruit-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderEmpaques();
-}
+const FF={avocado:`<div class="form-group"><label class="form-label">Variedad</label><select class="form-input" id="variedadInput"><option>Hass</option><option>Fuerte</option><option>Criollo</option><option>Reed</option></select></div><div class="form-row"><div class="form-group"><label class="form-label">Cantidad (kg)</label><input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updPrev()"></div><div class="form-group"><label class="form-label">Precio/kg</label><input class="form-input" type="text" id="precioKgInput" readonly></div></div><div class="form-group"><label class="form-label">Calibre</label><select class="form-input"><option>Calibre 28 (grande)</option><option>Calibre 36 (mediano)</option><option>Calibre 48 (chico)</option></select></div><div class="form-group"><label class="form-label">Calidad</label><select class="form-input"><option>Extra — sin defectos</option><option>Primera — defectos mínimos</option><option>Segunda — industria</option></select></div><div class="form-group"><label class="form-label">Fecha de entrega</label><input class="form-input" type="date" id="fechaEntregaInput"></div><div class="form-group"><label class="form-label">Municipio de origen</label><input class="form-input" type="text" placeholder="Ej. Tancítaro, Michoacán"></div><div class="form-group"><label class="form-label">Certificaciones</label><input class="form-input" type="text" placeholder="Global GAP, orgánico..."></div>`,strawberry:`<div class="form-group"><label class="form-label">Variedad</label><select class="form-input" id="variedadInput"><option>Albión</option><option>Festival</option><option>Camino Real</option><option>San Andreas</option></select></div><div class="form-row"><div class="form-group"><label class="form-label">Cantidad (kg)</label><input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updPrev()"></div><div class="form-group"><label class="form-label">Precio/kg</label><input class="form-input" type="text" id="precioKgInput" readonly></div></div><div class="form-group"><label class="form-label">Tamaño de fruto</label><select class="form-input"><option>Grande (+28mm)</option><option>Mediano (22–28mm)</option><option>Chico (–22mm)</option></select></div><div class="form-group"><label class="form-label">Estado de madurez</label><select class="form-input"><option>Firme — transporte largo</option><option>Media — mercado local</option><option>Madura — consumo inmediato</option></select></div><div class="form-group"><label class="form-label">Presentación</label><select class="form-input"><option>Charola 250g</option><option>Charola 500g</option><option>Caja a granel 5kg</option></select></div><div class="form-group"><label class="form-label">Fecha de entrega</label><input class="form-input" type="date" id="fechaEntregaInput"></div><div class="form-group"><label class="form-label">Municipio de origen</label><input class="form-input" type="text" placeholder="Ej. Irapuato, Guanajuato"></div>`,blueberry:`<div class="form-group"><label class="form-label">Variedad</label><select class="form-input" id="variedadInput"><option>Biloxi</option><option>Sharpblue</option><option>Misty</option><option>O'Neal</option></select></div><div class="form-row"><div class="form-group"><label class="form-label">Cantidad (kg)</label><input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updPrev()"></div><div class="form-group"><label class="form-label">Precio/kg</label><input class="form-input" type="text" id="precioKgInput" readonly></div></div><div class="form-group"><label class="form-label">Calibre de baya</label><select class="form-input"><option>Jumbo (+18mm)</option><option>Grande (15–18mm)</option><option>Estándar (12–15mm)</option></select></div><div class="form-group"><label class="form-label">Color / Madurez</label><select class="form-input"><option>Azul uniforme — maduro</option><option>70% azul — semi maduro</option><option>Mixto — industria</option></select></div><div class="form-group"><label class="form-label">Presentación</label><select class="form-input"><option>Pint 170g</option><option>Clamshell 250g</option><option>Caja a granel 1.5kg</option></select></div><div class="form-group"><label class="form-label">Temperatura de cadena de frío</label><select class="form-input"><option>0–2°C (exportación)</option><option>2–4°C (mercado nacional)</option></select></div><div class="form-group"><label class="form-label">Fecha de entrega</label><input class="form-input" type="date" id="fechaEntregaInput"></div><div class="form-group"><label class="form-label">Municipio de origen</label><input class="form-input" type="text" placeholder="Ej. Jalisco, Sonora..."></div>`};
 
-function renderEmpaques() {
-  const data = FRUITS[state.fruit].empaques;
-  const container = document.getElementById('empaqueCards');
-  container.innerHTML = data.map((e,i) => `
-    <div class="empaque-card anim-item" onclick="selectEmpaque(${i})">
-      <div class="card-label">Empaque</div>
-      <div class="card-name">${e.name}</div>
-      <div class="card-label" style="margin-top:8px">Precio compra</div>
-      <div class="card-price">$${e.price}<span class="card-price-sub"> /kg</span></div>
-      <button class="btn-vender">Vender aquí</button>
-    </div>
-  `).join('');
-}
+function selEmp(idx){st.empaque=idx;const e=FRUITS[st.fruit].empaques[idx];const fn={avocado:'Aguacate',strawberry:'Fresa',blueberry:'Arándano'}[st.fruit];document.getElementById('fruitFormCard').innerHTML=FF[st.fruit];document.getElementById('s2EmpaqueLabel').textContent=`${e.name} · ${fn}`;document.getElementById('precioKgInput').value=`$${e.price}`;document.getElementById('diasPago').textContent=e.dias;document.getElementById('cantidadInput').value='';document.getElementById('totalEstimado').textContent='$0.00';const t=new Date();t.setDate(t.getDate()+1);document.getElementById('fechaEntregaInput').value=t.toISOString().split('T')[0];navTo(2);}
+function updPrev(){const e=FRUITS[st.fruit].empaques[st.empaque];const kg=parseFloat(document.getElementById('cantidadInput').value)||0;st.cantidad=kg;document.getElementById('totalEstimado').textContent=fmx(kg*e.price);}
 
-const FRUIT_FORMS = {
-  avocado: `
-    <div class="form-group">
-      <label class="form-label">Variedad</label>
-      <select class="form-input" id="variedadInput">
-        <option>Hass</option><option>Fuerte</option><option>Criollo</option><option>Reed</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Cantidad (kg)</label>
-        <input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updatePreview()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Precio/kg</label>
-        <input class="form-input" type="text" id="precioKgInput" readonly>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Calibre</label>
-      <select class="form-input">
-        <option>Calibre 28 (grande)</option><option>Calibre 36 (mediano)</option><option>Calibre 48 (chico)</option><option>Calibre 60 (extra chico)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Calidad</label>
-      <select class="form-input">
-        <option>Extra — sin defectos</option><option>Primera — defectos mínimos</option><option>Segunda — industria</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Fecha de entrega</label>
-      <input class="form-input" type="date" id="fechaEntregaInput">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Municipio de origen</label>
-      <input class="form-input" type="text" placeholder="Ej. Tancítaro, Michoacán">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Certificaciones / Notas</label>
-      <input class="form-input" type="text" placeholder="Ej. Global GAP, orgánico...">
-    </div>`,
+function goToResumen(){if(!st.cantidad||st.cantidad<=0){const el=document.getElementById('cantidadInput');el.focus();el.style.borderColor='red';setTimeout(()=>el.style.borderColor='',1500);return;}
+const e=FRUITS[st.fruit].empaques[st.empaque];const total=st.cantidad*e.price;const fn={avocado:'Aguacate Hass',strawberry:'Fresa',blueberry:'Arándano'}[st.fruit];
+document.getElementById('s3Total').textContent=fmx(total);document.getElementById('s3Empaque').textContent=e.name;document.getElementById('s3EmpaqueNombre').textContent=e.name;document.getElementById('s3Fruta').textContent=fn;document.getElementById('s3Cantidad').textContent=`${st.cantidad} kg`;document.getElementById('s3Precio').textContent=`$${e.price}/kg`;document.getElementById('s3Dias').textContent=`${e.dias} días hábiles`;document.getElementById('s3TotalRow').textContent=fmx(total);
+const f=document.getElementById('fechaEntregaInput').value;if(f){document.getElementById('s3Fecha').textContent=fdate(f);const l=new Date(f);l.setDate(l.getDate()+e.dias);const ls=l.toISOString().split('T')[0];document.getElementById('s3FechaLiquidacion').textContent=fdate(ls);document.getElementById('sd-fecha').textContent=fdate(ls);}
+showLoad('Calculando totales...',800,()=>navTo(3));}
 
-  strawberry: `
-    <div class="form-group">
-      <label class="form-label">Variedad</label>
-      <select class="form-input" id="variedadInput">
-        <option>Albión</option><option>Festival</option><option>Camino Real</option><option>San Andreas</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Cantidad (kg)</label>
-        <input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updatePreview()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Precio/kg</label>
-        <input class="form-input" type="text" id="precioKgInput" readonly>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Tamaño de fruto</label>
-      <select class="form-input">
-        <option>Grande (+28mm)</option><option>Mediano (22–28mm)</option><option>Chico (–22mm)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Estado de madurez</label>
-      <select class="form-input">
-        <option>Firme — transporte largo</option><option>Media — mercado local</option><option>Madura — consumo inmediato</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Presentación</label>
-      <select class="form-input">
-        <option>Charola 250g</option><option>Charola 500g</option><option>Caja a granel 5kg</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Fecha de entrega</label>
-      <input class="form-input" type="date" id="fechaEntregaInput">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Municipio de origen</label>
-      <input class="form-input" type="text" placeholder="Ej. Irapuato, Guanajuato">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Certificaciones / Notas</label>
-      <input class="form-input" type="text" placeholder="Ej. certificado libre de plaguicidas...">
-    </div>`,
+function goToFactura(){navTo(4);updAnticipo();}
+function simulateUpload(){if(st.uploaded)return;showLoad('Cargando factura...',1200,()=>{st.uploaded=true;document.getElementById('uploadZone').style.borderStyle='solid';document.getElementById('uploadIcon').textContent='✅';document.getElementById('uploadTitle').textContent='factura_2025.xml';document.getElementById('uploadSub').textContent='Factura cargada correctamente';});}
+function selectFinanciera(i){st.finSel=i;for(let j=0;j<4;j++)document.getElementById('finCard'+j).classList.toggle('selected',j===i);updAnticipo();}
+function updAnticipo(){if(st.finSel<0||st.empaque===null)return;const e=FRUITS[st.fruit].empaques[st.empaque];const total=st.cantidad*e.price;const r=FR[st.finSel];document.getElementById('anticipoMonto').textContent=fmx(total*r);document.getElementById('anticipoDesc').textContent=`${(r*100).toFixed(0)}% del total · ${FN[st.finSel]}`;}
+function confirmar(){if(!st.uploaded){simulateUpload();return;}if(st.finSel<0){document.querySelector('.fin-select-card').style.outline='2px solid red';setTimeout(()=>document.querySelector('.fin-select-card').style.outline='',1500);return;}
+const e=FRUITS[st.fruit].empaques[st.empaque];const total=st.cantidad*e.price;const r=FR[st.finSel];const ant=total*r;
+document.getElementById('sd-empaque').textContent=e.name;document.getElementById('sd-fin').textContent=FN[st.finSel];document.getElementById('sd-anticipo').textContent=fmx(ant);document.getElementById('sd-restante').textContent=fmx(total-ant);
+showLoad('Cediendo factura...',1800,()=>navTo(5));}
 
-  blueberry: `
-    <div class="form-group">
-      <label class="form-label">Variedad</label>
-      <select class="form-input" id="variedadInput">
-        <option>Biloxi</option><option>Sharpblue</option><option>Misty</option><option>O'Neal</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Cantidad (kg)</label>
-        <input class="form-input" type="number" placeholder="0.0" id="cantidadInput" oninput="updatePreview()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Precio/kg</label>
-        <input class="form-input" type="text" id="precioKgInput" readonly>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Calibre de baya</label>
-      <select class="form-input">
-        <option>Jumbo (+18mm)</option><option>Grande (15–18mm)</option><option>Estándar (12–15mm)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Color / Madurez</label>
-      <select class="form-input">
-        <option>Azul uniforme — completamente maduro</option><option>70% azul — semi maduro</option><option>Mixto — industria</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Presentación</label>
-      <select class="form-input">
-        <option>Pint 170g</option><option>Clamshell 250g</option><option>Caja a granel 1.5kg</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Temperatura de cadena de frío</label>
-      <select class="form-input">
-        <option>0–2°C (exportación)</option><option>2–4°C (mercado nacional)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Fecha de entrega</label>
-      <input class="form-input" type="date" id="fechaEntregaInput">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Municipio de origen</label>
-      <input class="form-input" type="text" placeholder="Ej. Jalisco, Sonora...">
-    </div>`
-};
+function showVenta(i){const v=VENTAS[i];document.getElementById('phone').className='phone '+v.fc;
+document.getElementById('s7Title').textContent=v.folio;document.getElementById('s7Sub').textContent=`${v.fecha} · ${v.estado}`;document.getElementById('s7Amount').textContent=fmx(v.total);document.getElementById('s7Sub2').textContent=`${v.empaque} · ${v.fruta}`;
+document.getElementById('s7Rows').innerHTML=`<div class="detail-row"><span class="detail-row-label">Folio</span><span class="detail-row-value">${v.folio}</span></div><div class="detail-row"><span class="detail-row-label">Empaque</span><span class="detail-row-value">${v.empaque}</span></div><div class="detail-row"><span class="detail-row-label">Fruta</span><span class="detail-row-value">${v.emoji} ${v.fruta}</span></div><div class="detail-row"><span class="detail-row-label">Cantidad</span><span class="detail-row-value">${v.kg.toLocaleString()} kg</span></div><div class="detail-row"><span class="detail-row-label">Precio / kg</span><span class="detail-row-value">$${v.precio}</span></div><div class="detail-row"><span class="detail-row-label">Calibre / Calidad</span><span class="detail-row-value">${v.calibre}</span></div><div class="detail-row"><span class="detail-row-label">Municipio</span><span class="detail-row-value">${v.mun}</span></div><div class="detail-row"><span class="detail-row-label">Fecha de entrega</span><span class="detail-row-value">${v.entrega}</span></div><div class="detail-row"><span class="detail-row-label">Fecha liquidación</span><span class="detail-row-value">${v.liq}</span></div><div class="detail-row"><span class="detail-row-label">Financiera</span><span class="detail-row-value" style="color:${v.finC}">${v.fin}</span></div><div class="detail-row"><span class="detail-row-label">Anticipo (${v.pct})</span><span class="detail-row-value highlight">${fmx(v.ant)}</span></div><div class="detail-row"><span class="detail-row-label">Saldo pendiente</span><span class="detail-row-value">${fmx(v.total-v.ant)}</span></div><div class="detail-row"><span class="detail-row-label">Estado</span><span class="detail-row-value"><span class="venta-status ${v.ecls}">${v.estado}</span></span></div>`;
+const pend=v.estado==='Pendiente';document.getElementById('s7Icon').textContent=pend?'⏳':'✅';document.getElementById('s7Info').textContent=pend?`Pago pendiente. Liquidación estimada: ${v.liq}`:`Pago completado el ${v.liq}. Operación cerrada.`;
+navTo(7);setNav('nav-ventas');}
 
-function renderFruitForm() {
-  document.getElementById('fruitFormCard').innerHTML = FRUIT_FORMS[state.fruit] || FRUIT_FORMS.avocado;
-}
+function renderFact(f){const lista=f==='todas'?FACTS:FACTS.filter(x=>x.estado===f);const c=document.getElementById('facturasContainer');
+if(!lista.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sin facturas en esta categoría</div></div>';return;}
+if(f==='todas'){const pend=FACTS.filter(x=>x.estado==='pendiente');const pag=FACTS.filter(x=>x.estado==='pagada');let h='';if(pend.length){h+=`<div class="divider-label">Pendientes de liquidar</div>`;h+=pend.map(x=>fCard(x)).join('');}if(pag.length){h+=`<div class="divider-label" style="margin-top:8px">Liquidadas</div>`;h+=pag.map(x=>fCard(x)).join('');}c.innerHTML=h;}
+else{c.innerHTML=lista.map(x=>fCard(x)).join('');}}
 
-function selectEmpaque(idx) {
-  state.empaque = idx;
-  const e = FRUITS[state.fruit].empaques[idx];
-  const fruitName = { avocado:'Aguacate', strawberry:'Fresa', blueberry:'Arándano' }[state.fruit];
+function fCard(f){const idx=FACTS.indexOf(f);const p=f.estado==='pendiente';return`<div class="factura-card" style="border-left:4px solid ${p?'#856404':'#2D6A4F'}" onclick="showFact(${idx})"><div class="factura-icon-wrap" style="background:${p?'#FFF3CD':'#D8F3DC'}">${f.emoji}</div><div class="factura-info"><div class="factura-folio">${f.folio}</div><div class="factura-empaque">${f.empaque} · ${f.fin}</div><div style="margin-top:6px"><span class="venta-status ${p?'status-pendiente':'status-pagada'}">${p?'Pendiente':'Liquidada'}</span></div></div><div class="factura-right"><div class="factura-amount">${fmx(f.total)}</div><div class="factura-date">${f.fecha}</div></div></div>`;}
 
-  renderFruitForm();
+function filterFact(f,el){document.querySelectorAll('.tab-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');renderFact(f);}
 
-  document.getElementById('s2EmpaqueLabel').textContent = `${e.name} · ${fruitName}`;
-  document.getElementById('precioKgInput').value = `$${e.price}`;
-  document.getElementById('diasPago').textContent = e.dias;
-  document.getElementById('cantidadInput').value = '';
-  document.getElementById('totalEstimado').textContent = '$0.00';
+function showFact(i){const f=FACTS[i];const p=f.estado==='pendiente';document.getElementById('phone').className='phone '+f.fc;
+document.getElementById('s9Title').textContent=f.folio;document.getElementById('s9Sub').textContent=`${f.fecha} · ${p?'Pendiente':'Liquidada'}`;document.getElementById('s9Amount').textContent=fmx(f.total);document.getElementById('s9Sub2').textContent=`${f.empaque} · ${f.fruta}`;
+document.getElementById('s9Rows').innerHTML=`<div class="detail-row"><span class="detail-row-label">Folio</span><span class="detail-row-value">${f.folio}</span></div><div class="detail-row"><span class="detail-row-label">UUID / CFDI</span><span class="detail-row-value" style="font-size:12px">${f.uuid}</span></div><div class="detail-row"><span class="detail-row-label">Serie</span><span class="detail-row-value">${f.serie}</span></div><div class="detail-row"><span class="detail-row-label">Fecha de emisión</span><span class="detail-row-value">${f.fecha}</span></div><div class="detail-row"><span class="detail-row-label">Empaque deudor</span><span class="detail-row-value">${f.empaque}</span></div><div class="detail-row"><span class="detail-row-label">Fruta</span><span class="detail-row-value">${f.emoji} ${f.fruta}</span></div><div class="detail-row"><span class="detail-row-label">Monto total</span><span class="detail-row-value highlight">${fmx(f.total)}</span></div><div class="detail-row"><span class="detail-row-label">Financiera a cargo</span><span class="detail-row-value" style="color:${f.finC}">${f.fin}</span></div><div class="detail-row"><span class="detail-row-label">Anticipo cedido</span><span class="detail-row-value">${fmx(f.ant)}</span></div><div class="detail-row"><span class="detail-row-label">Saldo ${p?'pendiente':'liquidado'}</span><span class="detail-row-value">${fmx(f.rest)}</span></div><div class="detail-row"><span class="detail-row-label">Fecha de vencimiento</span><span class="detail-row-value">${f.vence}</span></div><div class="detail-row"><span class="detail-row-label">Estado</span><span class="detail-row-value"><span class="venta-status ${p?'status-pendiente':'status-pagada'}">${p?'Pendiente':'Liquidada'}</span></span></div>`;
+document.getElementById('s9Icon').textContent=p?'⏳':'✅';document.getElementById('s9Info').textContent=p?`La financiera ${f.fin} cobrará su comisión cuando el empaque liquide el ${f.vence}.`:`Pago completado. ${f.fin} retuvo su comisión el ${f.vence}.`;
+navTo(9);setNav('nav-facturas');}
 
-  const today = new Date();
-  today.setDate(today.getDate() + 1);
-  document.getElementById('fechaEntregaInput').value = today.toISOString().split('T')[0];
+function showLoad(t,ms,cb){const ov=document.getElementById('loading');document.getElementById('loadingText').textContent=t;ov.classList.add('show');setTimeout(()=>{ov.classList.remove('show');cb&&cb();},ms);}
+function fmx(n){return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(n);}
+function fdate(s){return new Date(s+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});}
 
-  navigateTo(2);
-}
-
-function updatePreview() {
-  const e = FRUITS[state.fruit].empaques[state.empaque];
-  const kg = parseFloat(document.getElementById('cantidadInput').value) || 0;
-  const total = kg * e.price;
-  state.cantidad = kg;
-  document.getElementById('totalEstimado').textContent = formatMXN(total);
-}
-
-function goToResumen() {
-  if (!state.cantidad || state.cantidad <= 0) {
-    document.getElementById('cantidadInput').focus();
-    document.getElementById('cantidadInput').style.borderColor = 'red';
-    setTimeout(() => document.getElementById('cantidadInput').style.borderColor = '', 1500);
-    return;
-  }
-  const e = FRUITS[state.fruit].empaques[state.empaque];
-  const total = state.cantidad * e.price;
-  const fruitName = { avocado:'Aguacate Hass', strawberry:'Fresa', blueberry:'Arándano' }[state.fruit];
-
-  document.getElementById('s3Total').textContent = formatMXN(total);
-  document.getElementById('s3Empaque').textContent = `${e.name}`;
-  document.getElementById('s3EmpaqueNombre').textContent = e.name;
-  document.getElementById('s3Fruta').textContent = fruitName;
-  document.getElementById('s3Cantidad').textContent = `${state.cantidad} kg`;
-  document.getElementById('s3Precio').textContent = `$${e.price}/kg`;
-  document.getElementById('s3Dias').textContent = `${e.dias} días hábiles`;
-  document.getElementById('s3TotalRow').textContent = formatMXN(total);
-
-  const fecha = document.getElementById('fechaEntregaInput').value;
-  if (fecha) {
-    document.getElementById('s3Fecha').textContent = formatDate(fecha);
-    const liq = new Date(fecha);
-    liq.setDate(liq.getDate() + e.dias);
-    document.getElementById('s3FechaLiquidacion').textContent = formatDate(liq.toISOString().split('T')[0]);
-    document.getElementById('sd-fecha').textContent = formatDate(liq.toISOString().split('T')[0]);
-  }
-
-  showLoading('Calculando totales...', 800, () => navigateTo(3));
-}
-
-function goToFactura() {
-  navigateTo(4);
-  updateAnticipoCard();
-}
-
-function simulateUpload() {
-  if (state.uploaded) return;
-  showLoading('Cargando factura...', 1200, () => {
-    state.uploaded = true;
-    document.getElementById('uploadZone').style.borderStyle = 'solid';
-    document.getElementById('uploadIcon').textContent = '✅';
-    document.getElementById('uploadTitle').textContent = 'factura_2024_001.xml';
-    document.getElementById('uploadSub').textContent = 'Factura cargada correctamente';
-  });
-}
-
-function selectFinanciera(idx) {
-  state.finSelected = idx;
-  for (let i = 0; i < 4; i++) {
-    document.getElementById(`finCard${i}`).classList.toggle('selected', i === idx);
-  }
-  updateAnticipoCard();
-}
-
-function updateAnticipoCard() {
-  if (state.finSelected < 0 || state.empaque === null) return;
-  const e = FRUITS[state.fruit].empaques[state.empaque];
-  const total = state.cantidad * e.price;
-  const rate = FIN_RATES[state.finSelected];
-  const anticipo = total * rate;
-  document.getElementById('anticipoMonto').textContent = formatMXN(anticipo);
-  document.getElementById('anticipoDesc').textContent = `${(rate*100).toFixed(0)}% del total · ${FIN_NAMES[state.finSelected]}`;
-}
-
-function confirmar() {
-  if (!state.uploaded) { simulateUpload(); return; }
-  if (state.finSelected < 0) {
-    document.querySelector('.fin-select-card').style.outline = '2px solid red';
-    setTimeout(() => document.querySelector('.fin-select-card').style.outline = '', 1500);
-    return;
-  }
-  const e = FRUITS[state.fruit].empaques[state.empaque];
-  const total = state.cantidad * e.price;
-  const rate = FIN_RATES[state.finSelected];
-  const anticipo = total * rate;
-
-  document.getElementById('sd-empaque').textContent = e.name;
-  document.getElementById('sd-fin').textContent = FIN_NAMES[state.finSelected];
-  document.getElementById('sd-anticipo').textContent = formatMXN(anticipo);
-  document.getElementById('sd-restante').textContent = formatMXN(total - anticipo);
-
-  showLoading('Cediendo factura...', 1800, () => navigateTo(5));
-}
-
-function goHome() {
-  state.finSelected = -1;
-  state.uploaded = false;
-  document.getElementById('uploadIcon').textContent = '📂';
-  document.getElementById('uploadTitle').textContent = 'Cargar factura XML / PDF';
-  document.getElementById('uploadSub').textContent = 'Toca para seleccionar desde tu dispositivo';
-  document.getElementById('uploadZone').style.borderStyle = 'dashed';
-  for (let i = 0; i < 4; i++) document.getElementById(`finCard${i}`).classList.remove('selected');
-  navigateTo(1);
-}
-
-function goBack(from) {
-  const prev = from - 1;
-  navigateTo(prev, true);
-}
-
-function navigateTo(n, back = false) {
-  document.querySelectorAll('.screen').forEach((s, i) => {
-    s.classList.remove('active');
-    if (!back) s.classList.toggle('slide-back', i < n - 1);
-  });
-  const target = document.getElementById(`screen${n}`);
-  target.classList.add('active');
-  target.classList.remove('slide-back');
-  target.scrollTop = 0;
-}
-
-function showLoading(text, duration, cb) {
-  const ov = document.getElementById('loading');
-  document.getElementById('loadingText').textContent = text;
-  document.getElementById('spinnerEl').style.borderTopColor = getComputedStyle(document.getElementById('phone')).getPropertyValue('--fruit-color') || '#2D6A4F';
-  ov.classList.add('show');
-  setTimeout(() => { ov.classList.remove('show'); if (cb) cb(); }, duration);
-}
-
-function formatMXN(n) {
-  return new Intl.NumberFormat('es-MX', { style:'currency', currency:'MXN' }).format(n);
-}
-function formatDate(str) {
-  const d = new Date(str + 'T12:00:00');
-  return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
-}
-
-// Init
-renderEmpaques();
-document.getElementById('financieraCards').innerHTML = `
-  <div class="financiera-card anim-item">
-    <div class="fin-logo" style="background:#1565C0">BF</div>
-    <div class="fin-info"><div class="fin-name">BancaFresh</div><div class="fin-rate">Anticipo: <strong>90%</strong> inmediato</div></div>
-    <div class="fin-badge">Promo 🔥</div>
-  </div>
-  <div class="financiera-card anim-item">
-    <div class="fin-logo" style="background:#6A1B9A">AF</div>
-    <div class="fin-info"><div class="fin-name">AgroFin</div><div class="fin-rate">Anticipo: <strong>88%</strong> inmediato</div></div>
-    <div class="fin-badge">Popular</div>
-  </div>
-  <div class="financiera-card anim-item">
-    <div class="fin-logo" style="background:#2E7D32">FV</div>
-    <div class="fin-info"><div class="fin-name">FinVerde</div><div class="fin-rate">Anticipo: <strong>84%</strong> inmediato</div></div>
-    <div class="fin-badge">Estable</div>
-  </div>
-  <div class="financiera-card anim-item">
-    <div class="fin-logo" style="background:#E65100">CC</div>
-    <div class="fin-info"><div class="fin-name">CampoCredi</div><div class="fin-rate">Anticipo: <strong>80%</strong> inmediato</div></div>
-    <div class="fin-badge">Básico</div>
-  </div>
-`;
+renderEmp();
+renderFact('todas');
 </script>
 </body>
 </html>
