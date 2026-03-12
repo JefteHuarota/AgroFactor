@@ -211,7 +211,7 @@ body{background:var(--bg);font-family:'MaxSans',sans-serif;min-height:100vh}
 .det-row{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid var(--bd)}
 .det-row:last-child{border-bottom:none}.det-rl{font-size:14px;color:var(--mu)}.det-rv{font-size:14px;font-weight:600;color:var(--tx);font-family:'MaxSans',sans-serif}.det-rv.hi{color:var(--fc,var(--ac))}
 .nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-around;z-index:50;padding:10px 0 28px}
-.nav-it{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 16px;border-radius:12px;transition:background .2s}
+.nav-it{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 10px;border-radius:12px;transition:background .2s}
 .nav-it:active{background:var(--bg)}.nav-it .nic{font-size:22px}.nav-it .nlb{font-size:10px;font-weight:600;color:var(--mu);letter-spacing:.5px}.nav-it.on .nlb{color:var(--ac)}
 .loader{position:fixed;inset:0;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
 .loader.on{opacity:1;pointer-events:all}
@@ -329,11 +329,11 @@ body{background:var(--bg);font-family:'MaxSans',sans-serif;min-height:100vh}
 <!-- S2 -->
 <div class="screen" id="s2">
   <div class="topbar"><button class="icon-btn ctx-dots" data-ctx="flow">&#8943;</button></div>
-  <div class="s2-hdr"><button class="back-btn" data-go="1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Regresar</button><div class="s2-badge"><span id="s2-label">SV Fresh &middot; Aguacate</span></div><div class="s2-ti">Detalle de<br>tu venta</div><div class="s2-su">Llena los campos para generar tu factura</div></div>
+  <div class="s2-hdr"><button class="back-btn" data-go="1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Regresar</button><div class="s2-badge"><span id="s2-label">SV Fresh &middot; Aguacate</span></div><div class="s2-ti">Solicitud<br>de Venta</div><div class="s2-su">Completa los datos para enviar tu solicitud</div></div>
   <div class="form-card" id="form-content"></div>
-  <div class="info-box"><span style="font-size:20px">&#128161;</span><p>El empaque liquidar&#225; el pago en <strong id="dias-pago">15</strong> d&#237;as h&#225;biles.</p></div>
-  <div class="form-card" style="border:2px solid var(--fc,var(--ac))"><div style="font-family:'MaxSans',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px">Estimado de pago</div><div style="font-family:'MaxSans',sans-serif;font-size:32px;font-weight:800;color:var(--fc,var(--ac))" id="total-est">$0.00</div><div style="font-size:12px;color:var(--mu);margin-top:4px">Precio empaque &times; cantidad ingresada</div></div>
-  <button class="btn-main" id="btn-to-resumen">Ver resumen completo <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+  <div class="info-box"><span style="font-size:20px">&#128161;</span><p>El empaque pagar&#225; en <strong id="dias-pago">15</strong> d&#237;as h&#225;biles tras la cosecha.</p></div>
+  <div class="form-card" style="border:2px solid var(--fc,var(--ac))"><div style="font-family:'MaxSans',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px">Estimado de pago</div><div style="font-family:'MaxSans',sans-serif;font-size:32px;font-weight:800;color:var(--fc,var(--ac))" id="total-est">$0.00</div><div style="font-size:12px;color:var(--mu);margin-top:4px">Precio empaque &times; cantidad estimada</div></div>
+  <button class="btn-main" id="btn-to-resumen">Enviar solicitud de venta <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
 </div>
 
 <!-- S3 -->
@@ -440,9 +440,70 @@ body{background:var(--bg);font-family:'MaxSans',sans-serif;min-height:100vh}
   </div>
 </div>
 
+<!-- S11 SOLICITUDES -->
+<div class="screen" id="s11">
+  <div class="topbar"><button class="icon-btn ctx-dots" data-ctx="s6">&#8943;</button></div>
+  <div class="ph ani"><div class="pt">Solicitudes</div><div class="psub">Estado de tus solicitudes de venta</div></div>
+  <div class="tpills ani">
+    <button class="tpill on" data-sfilter="todas">Todas</button>
+    <button class="tpill" data-sfilter="pendiente">Pendientes</button>
+    <button class="tpill" data-sfilter="aprobada">Aprobadas</button>
+    <button class="tpill" data-sfilter="cancelada">Canceladas</button>
+  </div>
+  <div id="sol-list"></div>
+</div>
+
+<!-- S12 DETALLE SOLICITUD -->
+<div class="screen" id="s12">
+  <div class="topbar"><button class="icon-btn ctx-dots" data-ctx="s6">&#8943;</button></div>
+  <div class="s2-hdr">
+    <button class="back-btn" data-go="11"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Solicitudes</button>
+    <div class="s2-ti" id="s12-ti">Detalle</div><div class="s2-su" id="s12-su">-</div>
+  </div>
+  <div class="det-hero" id="s12-hero"><div class="det-lbl">Estimado de venta</div><div class="det-amt" id="s12-amt">$0.00</div><div class="det-sub" id="s12-sub">-</div></div>
+  <div id="s12-status-box" style="margin:0 24px 16px;padding:16px 20px;border-radius:16px;border:2px solid #E8E4DE;background:#F5F2EE">
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;color:var(--mu);margin-bottom:6px">Estado de la solicitud</div>
+    <div style="font-size:15px;font-weight:600;color:var(--s12tc,#1A1A1A)" id="s12-status-msg">-</div>
+  </div>
+  <div class="det-rows" id="s12-rows"></div>
+  <div id="s12-propuesta-wrap"></div>
+</div>
+
+<!-- MODAL SOLICITUD ENVIADA -->
+<div class="confirm-bg" id="sol-sent-bg">
+  <div class="confirm-box">
+    <div class="confirm-ic">&#128203;</div>
+    <div class="confirm-ti">Solicitud enviada</div>
+    <div class="confirm-su">Tu solicitud est&#225; siendo revisada por el empaque. Revisa el status en <strong>Solicitudes</strong>.</div>
+    <div class="confirm-btns">
+      <button class="modal-save" id="sol-sent-ok" style="border-radius:12px">Ir a Solicitudes</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROPUESTA EMPAQUE -->
+<div class="confirm-bg" id="propuesta-bg">
+  <div class="confirm-box" style="text-align:left">
+    <div style="font-size:28px;margin-bottom:12px">&#128203;</div>
+    <div class="confirm-ti" style="text-align:left">Propuesta del empaque</div>
+    <div style="background:#FFF3CD;border-radius:12px;padding:14px;margin:12px 0">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;color:#856404;margin-bottom:4px">Motivo del rechazo</div>
+      <div style="font-size:14px;color:#856404;line-height:1.5" id="prop-motivo">-</div>
+    </div>
+    <div style="font-size:14px;color:var(--mu);margin-bottom:6px">Nueva propuesta de precio:</div>
+    <div style="font-family:'MaxSans',sans-serif;font-size:28px;font-weight:800;color:#E65100;margin-bottom:4px" id="prop-precio">-</div>
+    <div style="font-size:13px;color:var(--mu);margin-bottom:20px" id="prop-desc">-</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="modal-save" id="prop-aceptar" style="border-radius:12px;background:#2D6A4F">Aceptar propuesta</button>
+      <button class="btn-cancel" id="prop-rechazar" style="color:#C1121F;font-weight:700">Rechazar propuesta</button>
+    </div>
+  </div>
+</div>
+
 <div class="nav-bar">
   <div class="nav-it on" data-nav="1"><div class="nic">&#127968;</div><div class="nlb">Inicio</div></div>
   <div class="nav-it" data-nav="6"><div class="nic">&#128203;</div><div class="nlb">Mis ventas</div></div>
+  <div class="nav-it" data-nav="11"><div class="nic">&#128228;</div><div class="nlb">Solicitudes</div></div>
   <div class="nav-it" data-nav="8"><div class="nic">&#128196;</div><div class="nlb">Facturas</div></div>
   <div class="nav-it" data-nav="10"><div class="nic">&#128100;</div><div class="nlb">Perfil</div></div>
 </div>
@@ -464,6 +525,13 @@ var VENTAS=[
 {fo:'VNT-2025-002',fe:'15 ene 2025',fr:'Ar\u00e1ndano Biloxi',fc:'blu',em:'&#129744;',ep:'BlueFarm',kg:1500,pr:35,to:52500,di:14,es:'Pagada',ec:'s-pag',en:'22 ene 2025',lq:'5 feb 2025',fi:'FinVerde',fc2:'#2E7D32',pt:'84%',an:44100,ca:'Jumbo (+18mm)',qu:'Azul uniforme',mu:'Jalisco'},
 {fo:'VNT-2025-001',fe:'5 ene 2025',fr:'Aguacate Hass',fc:'avo',em:'\ud83e\udd51',ep:'SV Fresh',kg:1900,pr:10,to:19000,di:15,es:'Pagada',ec:'s-pag',en:'12 ene 2025',lq:'27 ene 2025',fi:'CampoCredi',fc2:'#E65100',pt:'80%',an:15200,ca:'Calibre 48',qu:'Primera',mu:'Uruapan, Mich.'}
 ];
+var SOLIC=[
+  {fo:'SOL-2025-005',fe:'Hoy, 12 mar 2025',fr:'Aguacate Hass',fc:'avo',em:'\ud83e\udd51',ep:'SV Fresh',kg:1500,pr:10,to:15000,mu:'Uruapan, Mich.',hu:'Rancho El Huaroto, Km 4',ha:'3.5',cd:'20 mar 2025',es:'pendiente',ec_color:'#856404',ec_bg:'#FFF3CD'},
+  {fo:'SOL-2025-004',fe:'5 mar 2025',fr:'Aguacate Hass',fc:'avo',em:'\ud83e\udd51',ep:'Calavo',kg:2000,pr:12,to:24000,mu:'Uruapan, Mich.',hu:'Rancho El Huaroto',ha:'4.0',cd:'12 mar 2025',es:'aprobada',ec_color:'#2D6A4F',ec_bg:'#D8F3DC'},
+  {fo:'SOL-2025-003',fe:'20 feb 2025',fr:'Fresa Albi\u00f3n',fc:'str',em:'\ud83c\udf53',ep:'BerryPack',kg:1000,pr:22,to:22000,mu:'Irapuato, Gto.',hu:'Invernadero Los Pinos',ha:'2.0',cd:'5 mar 2025',es:'cancelada',ec_color:'#C1121F',ec_bg:'#FFE5E7',propuesta:{precio:17,motivo:'El ingeniero de acopio visit\u00f3 la huerta el 27 feb. Se detect\u00f3 que el 40% de la fresa presenta manchas por exceso de sol y calibre menor al requerido. Se ofrece precio ajustado.',desc:'Precio original: $22/kg \u2192 Propuesta: $17/kg por 800 kg (fruta de segunda)'}},
+  {fo:'SOL-2025-002',fe:'10 feb 2025',fr:'Ar\u00e1ndano Biloxi',fc:'blu',em:'&#129744;',ep:'BlueFarm',kg:1500,pr:35,to:52500,mu:'Jalisco',hu:'Rancho Azul del Valle',ha:'5.0',cd:'25 feb 2025',es:'aprobada',ec_color:'#2D6A4F',ec_bg:'#D8F3DC'},
+  {fo:'SOL-2025-001',fe:'2 feb 2025',fr:'Aguacate Hass',fc:'avo',em:'\ud83e\udd51',ep:'MX Export',kg:800,pr:9.5,to:7600,mu:'Uruapan, Mich.',hu:'Parcela Norte, Huarota',ha:'1.5',cd:'15 feb 2025',es:'cancelada',ec_color:'#C1121F',ec_bg:'#FFE5E7',propuesta:null,cancelMsg:'El empaque ya cubri\u00f3 su cupo de compra para el periodo. La solicitud fue cancelada sin visita a huerta.'}
+];
 var FACTS=[
 {fo:'FAC-2025-004',fe:'28 feb 2025',ep:'BerryPack',fr:'Fresa Albi\u00f3n',em:'\ud83c\udf53',fc:'str',to:44000,an:38720,re:5280,es:'pendiente',fi:'AgroFin',fc2:'#6A1B9A',ve:'10 mar 2025',uu:'UUID-A834-FF21-0041',se:'FAC-B'},
 {fo:'FAC-2025-003',fe:'10 feb 2025',ep:'Calavo',fr:'Aguacate Hass',em:'\ud83e\udd51',fc:'avo',to:24000,an:21600,re:2400,es:'pagada',fi:'BancaFresh',fc2:'#1565C0',ve:'28 feb 2025',uu:'UUID-B412-CC93-0038',se:'FAC-A'},
@@ -471,9 +539,9 @@ var FACTS=[
 {fo:'FAC-2025-001',fe:'12 ene 2025',ep:'SV Fresh',fr:'Aguacate Hass',em:'\ud83e\udd51',fc:'avo',to:19000,an:15200,re:3800,es:'pagada',fi:'CampoCredi',fc2:'#E65100',ve:'27 ene 2025',uu:'UUID-D105-EE62-0011',se:'FAC-A'}
 ];
 var FORMS={
-avo:'<div class="fg"><label class="flbl">Variedad</label><select class="finp"><option>Hass</option><option>Fuerte</option><option>Criollo</option><option>Reed</option></select></div><div class="frow"><div class="fg"><label class="flbl">Cantidad (kg)</label><input class="finp" type="number" placeholder="0.0" id="kg-input"></div><div class="fg"><label class="flbl">Precio/kg</label><input class="finp" type="text" id="precio-input" readonly></div></div><div class="fg"><label class="flbl">Calibre</label><select class="finp"><option>Calibre 28 (grande)</option><option>Calibre 36 (mediano)</option><option>Calibre 48 (chico)</option></select></div><div class="fg"><label class="flbl">Calidad</label><select class="finp"><option>Extra</option><option>Primera</option><option>Segunda</option></select></div><div class="fg"><label class="flbl">Fecha de entrega</label><input class="finp" type="date" id="fecha-input"></div><div class="fg"><label class="flbl">Municipio de origen</label><input class="finp" type="text" placeholder="Ej. Tanc\u00edtaro, Michoac\u00e1n"></div><div class="fg"><label class="flbl">Certificaciones</label><input class="finp" type="text" placeholder="Global GAP, org\u00e1nico..."></div>',
-str:'<div class="fg"><label class="flbl">Variedad</label><select class="finp"><option>Albi\u00f3n</option><option>Festival</option><option>Camino Real</option><option>San Andreas</option></select></div><div class="frow"><div class="fg"><label class="flbl">Cantidad (kg)</label><input class="finp" type="number" placeholder="0.0" id="kg-input"></div><div class="fg"><label class="flbl">Precio/kg</label><input class="finp" type="text" id="precio-input" readonly></div></div><div class="fg"><label class="flbl">Tama\u00f1o</label><select class="finp"><option>Grande (+28mm)</option><option>Mediano (22-28mm)</option><option>Chico (-22mm)</option></select></div><div class="fg"><label class="flbl">Madurez</label><select class="finp"><option>Firme</option><option>Media</option><option>Madura</option></select></div><div class="fg"><label class="flbl">Presentaci\u00f3n</label><select class="finp"><option>Charola 250g</option><option>Caja 5kg</option></select></div><div class="fg"><label class="flbl">Fecha de entrega</label><input class="finp" type="date" id="fecha-input"></div><div class="fg"><label class="flbl">Municipio</label><input class="finp" type="text" placeholder="Ej. Irapuato, Guanajuato"></div>',
-blu:'<div class="fg"><label class="flbl">Variedad</label><select class="finp"><option>Biloxi</option><option>Sharpblue</option><option>Misty</option></select></div><div class="frow"><div class="fg"><label class="flbl">Cantidad (kg)</label><input class="finp" type="number" placeholder="0.0" id="kg-input"></div><div class="fg"><label class="flbl">Precio/kg</label><input class="finp" type="text" id="precio-input" readonly></div></div><div class="fg"><label class="flbl">Calibre baya</label><select class="finp"><option>Jumbo (+18mm)</option><option>Grande (15-18mm)</option><option>Est\u00e1ndar</option></select></div><div class="fg"><label class="flbl">Color/Madurez</label><select class="finp"><option>Azul uniforme</option><option>70% azul</option><option>Mixto</option></select></div><div class="fg"><label class="flbl">Presentaci\u00f3n</label><select class="finp"><option>Pint 170g</option><option>Clamshell 250g</option><option>Caja 1.5kg</option></select></div><div class="fg"><label class="flbl">Fecha de entrega</label><input class="finp" type="date" id="fecha-input"></div><div class="fg"><label class="flbl">Municipio</label><input class="finp" type="text" placeholder="Ej. Jalisco, Sonora"></div>'
+avo:'<div class="fg"><label class="flbl">Variedad</label><select class="finp"><option>Hass</option><option>Fuerte</option><option>Criollo</option><option>Reed</option></select></div><div class="frow"><div class="fg"><label class="flbl">Cantidad estimada (kg)</label><input class="finp" type="number" placeholder="0.0" id="kg-input"></div><div class="fg"><label class="flbl">Precio/kg</label><input class="finp" type="text" id="precio-input" readonly></div></div><div class="fg"><label class="flbl">Calibre</label><select class="finp"><option>Calibre 28 (grande)</option><option>Calibre 36 (mediano)</option><option>Calibre 48 (chico)</option></select></div><div class="fg"><label class="flbl">Calidad</label><select class="finp"><option>Extra</option><option>Primera</option><option>Segunda</option></select></div><div class="fg"><label class="flbl">Ubicaci\u00f3n del Huerto</label><input class="finp" type="text" placeholder="Ej. Rancho El Huaroto, Tanc\u00edtaro"></div><div class="fg"><label class="flbl">Cantidad de Hect\u00e1reas</label><input class="finp" type="number" placeholder="0.0" step="0.5"></div><div class="fg"><label class="flbl">Fecha de disponibilidad para cosecha</label><input class="finp" type="date" id="fecha-input"></div><div class="fg"><label class="flbl">Municipio de origen</label><input class="finp" type="text" placeholder="Ej. Tanc\u00edtaro, Michoac\u00e1n"></div><div class="fg"><label class="flbl">Certificaciones</label><input class="finp" type="text" placeholder="Global GAP, org\u00e1nico..."></div>',
+str:'<div class="fg"><label class="flbl">Variedad</label><select class="finp"><option>Albi\u00f3n</option><option>Festival</option><option>Camino Real</option><option>San Andreas</option></select></div><div class="frow"><div class="fg"><label class="flbl">Cantidad estimada (kg)</label><input class="finp" type="number" placeholder="0.0" id="kg-input"></div><div class="fg"><label class="flbl">Precio/kg</label><input class="finp" type="text" id="precio-input" readonly></div></div><div class="fg"><label class="flbl">Tama\u00f1o</label><select class="finp"><option>Grande (+28mm)</option><option>Mediano (22-28mm)</option><option>Chico (-22mm)</option></select></div><div class="fg"><label class="flbl">Madurez</label><select class="finp"><option>Firme</option><option>Media</option><option>Madura</option></select></div><div class="fg"><label class="flbl">Presentaci\u00f3n</label><select class="finp"><option>Charola 250g</option><option>Caja 5kg</option></select></div><div class="fg"><label class="flbl">Ubicaci\u00f3n del Huerto</label><input class="finp" type="text" placeholder="Ej. Rancho Las Fresas, Irapuato"></div><div class="fg"><label class="flbl">Cantidad de Hect\u00e1reas</label><input class="finp" type="number" placeholder="0.0" step="0.5"></div><div class="fg"><label class="flbl">Fecha de disponibilidad para cosecha</label><input class="finp" type="date" id="fecha-input"></div><div class="fg"><label class="flbl">Municipio</label><input class="finp" type="text" placeholder="Ej. Irapuato, Guanajuato"></div>',
+blu:'<div class="fg"><label class="flbl">Variedad</label><select class="finp"><option>Biloxi</option><option>Sharpblue</option><option>Misty</option></select></div><div class="frow"><div class="fg"><label class="flbl">Cantidad estimada (kg)</label><input class="finp" type="number" placeholder="0.0" id="kg-input"></div><div class="fg"><label class="flbl">Precio/kg</label><input class="finp" type="text" id="precio-input" readonly></div></div><div class="fg"><label class="flbl">Calibre baya</label><select class="finp"><option>Jumbo (+18mm)</option><option>Grande (15-18mm)</option><option>Est\u00e1ndar</option></select></div><div class="fg"><label class="flbl">Color/Madurez</label><select class="finp"><option>Azul uniforme</option><option>70% azul</option><option>Mixto</option></select></div><div class="fg"><label class="flbl">Presentaci\u00f3n</label><select class="finp"><option>Pint 170g</option><option>Clamshell 250g</option><option>Caja 1.5kg</option></select></div><div class="fg"><label class="flbl">Ubicaci\u00f3n del Huerto</label><input class="finp" type="text" placeholder="Ej. Rancho Azul, Valle de Jalisco"></div><div class="fg"><label class="flbl">Cantidad de Hect\u00e1reas</label><input class="finp" type="number" placeholder="0.0" step="0.5"></div><div class="fg"><label class="flbl">Fecha de disponibilidad para cosecha</label><input class="finp" type="date" id="fecha-input"></div><div class="fg"><label class="flbl">Municipio</label><input class="finp" type="text" placeholder="Ej. Jalisco, Sonora"></div>'
 };
 var state={fruit:'avo',emp:null,kg:0,fin:-1,uploaded:false};
 
@@ -529,10 +597,13 @@ function selEmp(i){
 document.getElementById('btn-to-resumen').addEventListener('click',function(){
   if(!state.kg||state.kg<=0){var el=document.getElementById('kg-input');if(el){el.focus();el.style.borderColor='red';setTimeout(function(){el.style.borderColor='';},1500);}return;}
   var e=FRUITS[state.fruit].empaques[state.emp],tot=state.kg*e.p;
+  var f=document.getElementById('fecha-input')?document.getElementById('fecha-input').value:'';
+  // Save last solicitud as pending
   var fn={avo:'Aguacate Hass',str:'Fresa',blu:'Ar\u00e1ndano'}[state.fruit];
-  document.getElementById('s3-total').textContent=mx(tot);document.getElementById('s3-emp').textContent=e.n;document.getElementById('s3-en').textContent=e.n;document.getElementById('s3-fr').textContent=fn;document.getElementById('s3-ca').textContent=state.kg+' kg';document.getElementById('s3-pr').textContent='$'+e.p+'/kg';document.getElementById('s3-di').textContent=e.d+' d\u00edas h\u00e1biles';document.getElementById('s3-tr').textContent=mx(tot);
-  var f=document.getElementById('fecha-input').value;if(f){document.getElementById('s3-fe').textContent=fd(f);var l=new Date(f);l.setDate(l.getDate()+e.d);var ls=l.toISOString().split('T')[0];document.getElementById('s3-liq').textContent=fd(ls);document.getElementById('sd-fec').textContent=fd(ls);}
-  showLoad('Calculando totales...',800,function(){goTo(3);});
+  var today=new Date();
+  var todayStr='Hoy, '+today.getDate()+' '+['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][today.getMonth()]+' '+today.getFullYear();
+  SOLIC[0]={fo:'SOL-2025-005',fe:todayStr,fr:fn,fc:state.fruit,em:{avo:'\ud83e\udd51',str:'\ud83c\udf53',blu:'&#129744;'}[state.fruit],ep:e.n,kg:state.kg,pr:e.p,to:tot,mu:'Uruapan, Mich.',hu:'Rancho El Huaroto',ha:'3.5',cd:f?fd(f):'Por confirmar',es:'pendiente',ec_color:'#856404',ec_bg:'#FFF3CD'};
+  showLoad('Enviando solicitud...',1000,function(){document.getElementById('sol-sent-bg').classList.add('on');});
 });
 document.getElementById('btn-to-factura').addEventListener('click',function(){goTo(4);updAnti();});
 document.getElementById('upzone').addEventListener('click',function(){if(state.uploaded)return;showLoad('Cargando factura...',1200,function(){state.uploaded=true;document.getElementById('upzone').style.borderStyle='solid';document.getElementById('up-ic').textContent='\u2705';document.getElementById('up-ti').textContent='factura_2025.xml';document.getElementById('up-su').textContent='Factura cargada correctamente';});});
@@ -569,7 +640,7 @@ function showFact(i){
 }
 
 // NAV
-document.querySelectorAll('.nav-it').forEach(function(el){el.addEventListener('click',function(){var n=parseInt(el.dataset.nav);setNav(n);goTo(n);if(n===8)renderFacts('todas');});});
+document.querySelectorAll('.nav-it').forEach(function(el){el.addEventListener('click',function(){var n=parseInt(el.dataset.nav);setNav(n);goTo(n);if(n===8)renderFacts('todas');if(n===11)renderSolic('todas');});});
 document.querySelectorAll('.back-btn').forEach(function(btn){btn.addEventListener('click',function(){goTo(parseInt(btn.dataset.go),true);});});
 
 // MODAL
@@ -648,8 +719,108 @@ function showLoad(txt,ms,cb){var o=document.getElementById('loader');document.ge
 function mx(n){return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(n);}
 function fd(s){return new Date(s+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});}
 
+// SOL-SENT MODAL
+document.getElementById('sol-sent-ok').addEventListener('click',function(){
+  document.getElementById('sol-sent-bg').classList.remove('on');
+  setNav(11);
+  renderSolic('todas');
+  goTo(11);
+});
+
+// SOLICITUDES
+function renderSolic(filter){
+  var lista=filter==='todas'?SOLIC:SOLIC.filter(function(s){return s.es===filter;});
+  var c=document.getElementById('sol-list');
+  if(!lista.length){c.innerHTML='<div class="empty"><div class="empty-ic">&#128203;</div><div class="empty-tx">Sin solicitudes aqu\u00ed</div></div>';return;}
+  c.innerHTML=lista.map(function(s){
+    var idx=SOLIC.indexOf(s);
+    var icon=s.es==='pendiente'?'\u23f3':s.es==='aprobada'?'\u2705':'\u274c';
+    var lbl=s.es==='pendiente'?'Pendiente':s.es==='aprobada'?'Aprobada':'Cancelada';
+    return '<div class="vcard" style="border-left-color:'+s.ec_color+'" data-sol="'+idx+'">'+
+      '<div class="vcard-top"><div class="vfolio">'+s.fo+'</div><div class="vfech">'+s.fe+'</div></div>'+
+      '<div class="vmeta"><span class="vtag '+s.fc+'">'+s.em+' '+s.fr+'</span><span class="vtag">'+s.ep+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end">'+
+        '<div><div class="vamt" style="color:'+s.ec_color+'">'+mx(s.to)+'</div><div class="vemp">~'+s.kg.toLocaleString()+' kg est. &middot; $'+s.pr+'/kg</div></div>'+
+        '<span class="vstatus" style="background:'+s.ec_bg+';color:'+s.ec_color+'">'+icon+' '+lbl+'</span>'+
+      '</div></div>';
+  }).join('');
+  document.querySelectorAll('.vcard[data-sol]').forEach(function(card){
+    card.addEventListener('click',function(){showSolic(parseInt(card.dataset.sol));});
+  });
+}
+document.querySelectorAll('.tpill[data-sfilter]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tpill[data-sfilter]').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+    renderSolic(btn.dataset.sfilter);
+  });
+});
+
+function showSolic(i){
+  var s=SOLIC[i];
+  document.getElementById('app').className='app '+s.fc;
+  document.getElementById('s12-ti').textContent=s.fo;
+  document.getElementById('s12-su').textContent=s.fe+' \u00b7 '+s.ep;
+  document.getElementById('s12-amt').textContent=mx(s.to);
+  document.getElementById('s12-sub').textContent=s.ep+' \u00b7 '+s.fr;
+
+  // Status color
+  var root=document.getElementById('s12-hero');
+  root.style.background=s.ec_color;
+
+  var stBox=document.getElementById('s12-status-box');
+  if(stBox){stBox.style.borderColor=s.ec_color;stBox.style.background=s.ec_bg;}
+
+  var statusMsgs={
+    pendiente:'\u23f3 El empaque est\u00e1 revisando tu solicitud.',
+    aprobada:'\u2705 El empaque ha aceptado tu solicitud. Un ingeniero visitar\u00e1 tu huerta en las pr\u00f3ximas 24 hrs.',
+    cancelada:'\u274c '+( s.propuesta?'El ingeniero de acopio visit\u00f3 tu huerta. No se lleg\u00f3 al precio acordado. El empaque hace una propuesta de compra.':(s.cancelMsg||'El empaque no necesita m\u00e1s fruta en este momento o tu huerto no cumple con los lineamientos actuales.'))
+  };
+  document.getElementById('s12-status-msg').textContent=statusMsgs[s.es];
+
+  document.getElementById('s12-rows').innerHTML=
+    dr('Folio',s.fo)+dr('Empaque',s.ep)+dr('Fruta',s.em+' '+s.fr)+
+    dr('Cantidad estimada',s.kg.toLocaleString()+' kg')+dr('Precio/kg','$'+s.pr)+
+    drhi('Total estimado',mx(s.to))+
+    dr('Ubicaci\u00f3n del huerto',s.hu)+dr('Hect\u00e1reas',s.ha+' ha')+
+    dr('Disponibilidad cosecha',s.cd)+dr('Municipio',s.mu)+
+    '<div class="det-row"><span class="det-rl">Estado</span><span class="det-rv"><span class="vstatus" style="background:'+s.ec_bg+';color:'+s.ec_color+'">'+
+    (s.es==='pendiente'?'\u23f3 Pendiente':s.es==='aprobada'?'\u2705 Aprobada':'\u274c Cancelada')+'</span></span></div>';
+
+  // Propuesta wrap
+  var pw=document.getElementById('s12-propuesta-wrap');
+  if(s.es==='cancelada'&&s.propuesta){
+    pw.innerHTML='<div style="margin:0 24px 20px"><button class="btn-main" style="margin:0;width:100%;background:#E65100" id="btn-ver-propuesta">Ver propuesta del empaque &#8250;</button></div>';
+    document.getElementById('btn-ver-propuesta').addEventListener('click',function(){
+      document.getElementById('prop-motivo').textContent=s.propuesta.motivo;
+      document.getElementById('prop-precio').textContent='$'+s.propuesta.precio+'/kg';
+      document.getElementById('prop-desc').textContent=s.propuesta.desc;
+      document.getElementById('propuesta-bg').classList.add('on');
+    });
+  } else {
+    pw.innerHTML='';
+  }
+
+  goTo(12);setNav(11);
+}
+
+document.getElementById('prop-aceptar').addEventListener('click',function(){
+  document.getElementById('propuesta-bg').classList.remove('on');
+  showLoad('Aceptando propuesta...',1200,function(){
+    // show success
+    document.getElementById('s12-status-msg').textContent='\u2705 Propuesta aceptada. El empaque contactar\u00e1 a un ingeniero para coordinar la cosecha.';
+  });
+});
+document.getElementById('prop-rechazar').addEventListener('click',function(){
+  document.getElementById('propuesta-bg').classList.remove('on');
+  showLoad('Rechazando propuesta...',800,function(){
+    document.getElementById('s12-status-msg').textContent='\u274c Propuesta rechazada. La solicitud qued\u00f3 definitivamente cancelada.';
+  });
+});
+
 renderEmpaques();
 renderFacts('todas');
+renderSolic('todas');
 });
 </script>
 </body>
