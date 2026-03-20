@@ -126,7 +126,7 @@ body{background:#F0F2F0;font-family:'MaxSans',sans-serif;min-height:100vh}
 .form-card{background:var(--sur);border-radius:var(--r);padding:20px;margin:0 24px 14px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
 .fg{margin-bottom:16px}.fg:last-child{margin-bottom:0}
 .flbl{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;display:block}
-.finp{width:100%;padding:14px 16px;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);font-family:'MaxSans',sans-serif;font-size:15px;color:var(--tx);transition:border-color .2s;outline:none}
+.finp{width:100%;padding:14px 16px;background:var(--bg);border:2px solid var(--bd);border-radius:var(--rs);font-family:'MaxSans',sans-serif;font-size:15px;color:var(--tx);transition:border-color .2s;outline:none;box-sizing:border-box;-webkit-appearance:none;appearance:none}.finp[type=date]{display:block;min-height:52px}
 .finp:focus{border-color:var(--fc,var(--ac))}
 .frow{display:flex;gap:10px}.frow .fg{flex:1}
 .info-box{background:#F0FFF6;border:1px solid #BBF7D0;border-radius:var(--rs);padding:14px 16px;margin:0 24px 14px;display:flex;align-items:center;gap:10px}
@@ -181,8 +181,8 @@ body{background:#F0F2F0;font-family:'MaxSans',sans-serif;min-height:100vh}
 .vemp{font-size:12px;color:var(--mu);margin-top:2px}
 .vstatus{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;letter-spacing:.5px;text-transform:uppercase}
 .s-pag{background:#DCFCE7;color:#15803D}.s-pen{background:#FFF3CD;color:#856404}
-.tpills{display:flex;gap:8px;padding:0 24px 16px}
-.tpill{padding:8px 20px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--bd);background:var(--sur);color:var(--mu);transition:all .2s;font-family:'MaxSans',sans-serif}
+.tpills{display:flex;gap:8px;padding:0 24px 16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.tpills::-webkit-scrollbar{display:none}
+.tpill{padding:8px 20px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--bd);background:var(--sur);color:var(--mu);transition:all .2s;font-family:'MaxSans',sans-serif;white-space:nowrap;flex-shrink:0}
 .tpill.on{background:#1A7A3C;border-color:#1A7A3C;color:#fff;box-shadow:0 2px 8px rgba(26,122,60,.25)}
 .fac-card{background:var(--sur);border-radius:var(--r);padding:18px 20px;margin:0 24px 14px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;display:flex;gap:14px;align-items:center}
 .fac-card:active{transform:scale(.98)}
